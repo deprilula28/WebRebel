@@ -82,12 +82,12 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	@Override
 	public void onWebSocketConnect(Session session){
 		
-		executorService.scheduleAtFixedRate(this, 0l, 5l, TimeUnit.SECONDS);
 		System.out.println("Connected: " + connection.getUserAgent() + ", " + connection.getIp());
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
 		reloadTree();
+		sendAction(new Action(ActionType.SERVER_HANDSHAKE, UUID.randomUUID(), new JSONObject()));
 		
 	}
 
@@ -116,6 +116,12 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 			json = new JSONObject(message);
 			ActionType action = ActionType.valueOf(json.getString("action"));
 			
+			if(!shakedHands && !action.equals(ActionType.CLIENT_HANDSHAKE)){
+				sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSONObject().put("error", Errors.INVALID_INPUT)
+						.put("errorMessage", "Handshake must be completed first!")));
+				return;
+			}
+			
 			switch(action){
 			case CLIENT_ERROR:
 				JSONObject error = json.getJSONObject("info");
@@ -141,6 +147,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				
 				shakeRequestTime = -1;
 				ping = (int) (System.currentTimeMillis() - shakeRequestTime);
+				executorService.scheduleAtFixedRate(this, 0l, 5l, TimeUnit.SECONDS);
 				reloadTree();
 				break;
 			case CLIENT_PONG:

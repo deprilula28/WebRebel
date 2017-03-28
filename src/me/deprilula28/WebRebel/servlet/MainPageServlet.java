@@ -36,7 +36,6 @@ public class MainPageServlet extends HttpServlet{
 		try{
 			
 			String split = request.getServletPath().substring(1);
-			System.out.println(split);
 			
 			if(split == "admin"){
 				//TODO Admin page

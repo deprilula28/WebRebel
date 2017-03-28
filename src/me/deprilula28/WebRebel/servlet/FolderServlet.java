@@ -52,7 +52,6 @@ public class FolderServlet extends HttpServlet{
 				
 				response.setStatus(HttpStatus.FOUND_302);
 				response.getWriter().append(stringBuilder.toString());
-				System.out.println("Found 302");
 			}else{
 				path = path.substring(7);
 				File file = new File(WebRebel.REBEL.getFrame().getFolder().getAbsolutePath() + File.separatorChar + path.replaceAll("/", File.separatorChar == '\\' ? "\\\\" : "/"));

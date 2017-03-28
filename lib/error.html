@@ -4,53 +4,76 @@
         <title>WebRebel Error Page</title>
 
         <style>
-            * {
-                margin: 0;
-                padding: 0;
-            }
+           .mainImg {
+			  position: fixed;
+			  width: 375px;
+			  height: 100px;
+			}
 
-            .background {
-                position: relative;
-                left: 0px;
-                top: 0px;
-                width: 100vw;
-                height: 100vh;
-                animation: move 10s ease infinite;
-                background: linear-gradient(45deg, green, cyan);
-                background-size: 200% 100%;
-            }
-
-            .background .title {
-                font-size: 7em;
-                color: white;
-                box-sizing: border-box;
-                text-align: center;
-                position: relative;
-                top: 20vh;
-            }
-            .background p {
-                font-size: 2.3em;
-                color: white;
-                box-sizing: border-box;
-                text-align: center;
-                position: relative;
-                top: 40vh;
-            }
-
-            @keyframes move {
-                0%, 100% {
-                    background-position: 90% 10%;
-                }
-                50% {
-                    background-position: 10%, 90%;
-                }
-            }
+			p {
+			  font-size: 1.5em;
+			  position: fixed;
+			  text-align: center;
+			}
         </style>
     </head>
     <body>
-        <div class="background">
-            <p class="title">WebRebel</p>
-            <p>%%_ERROR_MESSAGE_%%</p>
-        </div>
+		<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+        <img class="mainImg" />
+		<p class="paragraph">%%_ERROR_MESSAGE_%%</p>
+		
+		<script>
+		var map = [
+  [
+    "http://i.imgur.com/nukC5TQ.png", 
+    "#FFFFFF",
+    "#81A2BE"
+  ],
+  [
+    "http://i.imgur.com/4CWlKBI.png", 
+    "#282C34",
+    "#58AFEF"
+  ],
+  [
+    "http://i.imgur.com/JRDl6nD.png",
+    "#1E1E1E",
+    "#CE6706"
+  ],
+  [
+    "http://i.imgur.com/sPmlkq4.png",
+    "#002B36",
+    "#839484"
+  ],
+  [
+    "http://i.imgur.com/yDEsjEO.png", 
+    "#000C18",
+    "#DDBB88"
+  ]
+];
+
+$(window).resize(function(){
+  calculateCenter();
+});
+
+function calculateCenter(){
+  
+  $(".mainImg").css({"left": ($(window).width() / 2 - 375 / 2) + "px", "top": ($(window).height() / 2 - 150) + "px"});
+  var $paragraph = $(".paragraph");
+  var paragraph = $paragraph.get(0);
+  $paragraph.css({"left": $(window).width() / 2 - paragraph.clientWidth / 2, "top": $(window).height() / 2 + 30});
+  
+}
+calculateCenter();
+
+function randomize(){
+  var value = Math.floor(Math.random() * Object.keys(map).length);
+  console.log(value);
+
+  $(".mainImg").get(0).src = map[value][0];
+  $("body").css({"background-color": map[value][1]});
+  $(".paragraph").css({"color": map[value][2]});
+}
+randomize();
+		</script>
     </body>
 </html>
