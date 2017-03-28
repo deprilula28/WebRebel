@@ -3,23 +3,25 @@ package me.deprilula28.WebRebel.connection;
 import java.awt.Color;
 import java.net.InetSocketAddress;
 
+import me.deprilula28.WebRebel.servlet.UseragentParser;
+
 public class WebRebelConnection{
 	
-	private String userAgent;
+	private UseragentParser parser;
 	private InetSocketAddress ip;
 	private boolean codeEditingPermissable;
 	private Color codeColor;
 	
 	public WebRebelConnection(String userAgent, InetSocketAddress ip){
 		
-		this.userAgent = userAgent;
+		parser = new UseragentParser(userAgent);
 		this.ip = ip;
 		
 	}
+
+	public UseragentParser getUserAgentParser(){
 	
-	public String getUserAgent(){
-	
-		return userAgent;
+		return parser;
 	
 	}
 	

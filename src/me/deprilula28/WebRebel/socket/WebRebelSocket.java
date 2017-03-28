@@ -31,6 +31,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	private boolean shakedHands;
 	private long lastPing;
 	private int ping;
+	private boolean pending;
 	
 	public WebRebelSocket(WebRebelConnection connection){
 
@@ -73,7 +74,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketClose(int code, String message){
 
 		executorService.shutdown();
-		System.out.println("Disconnected: " + connection.getUserAgent() + ", " + connection.getIp());
+		System.out.println("Disconnected: " + connection.getUserAgentParser().getBrowser() + ", " + connection.getUserAgentParser().getOperatingSystem() + ", " + connection.getIp());
 		WebRebel.REBEL.getConnections().remove(this);
 		reloadTree();
 		
@@ -82,7 +83,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	@Override
 	public void onWebSocketConnect(Session session){
 		
-		System.out.println("Connected: " + connection.getUserAgent() + ", " + connection.getIp());
+		connection.getUserAgentParser().runParser();
+		System.out.println("Connected: " + connection.getUserAgentParser().getBrowser() + ", " + connection.getUserAgentParser().getOperatingSystem() + ", " + connection.getIp());
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
@@ -154,6 +156,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				if(lastPing < 0) throw new IOException("I never pinged you!");
 				ping = (int) (System.currentTimeMillis() - lastPing);
 				lastPing = -1;
+				pending = false;
 				reloadTree();
 				break;
 			}
@@ -180,19 +183,29 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		WebRebel.REBEL.getFrame().getClientTree().setModel(new DefaultTreeModel(
 			new DefaultMutableTreeNode("root"){
 				{
-					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new DefaultMutableTreeNode(socket.getConnection().getIp() + " (" + socket.getPing() + "ms)"));
+					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new DefaultMutableTreeNode(socket.getConnection().getUserAgentParser().getOperatingSystem() + " " +
+							socket.getConnection().getUserAgentParser().getBrowser() + (socket.isPending() ? " Pending..." : " (" + socket.getPing() + "ms)")));
 					if(WebRebel.REBEL.getConnections().size() == 0) add(new DefaultMutableTreeNode("No connections."));
 				}
 			}
 		));
 		
 	}
+	
+	public boolean isPending(){
+		
+		return pending;
+		
+	}
 
 	@Override
 	public void run(){
 		
-		lastPing = System.currentTimeMillis();
-		sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSONObject()));
+		if(lastPing > 0) pending = true;
+		else{
+			lastPing = System.currentTimeMillis();
+			sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSONObject()));
+		}
 		
 	}
 	
