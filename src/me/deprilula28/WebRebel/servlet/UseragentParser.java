@@ -55,6 +55,12 @@ public class UseragentParser{
 
 	private String findVersionNameAndroid(int majorVersion, int minorVersion){
 
+		if(majorVersion == 6) return "Marshmello";
+		if(majorVersion == 7) return "Nougat";
+		if(majorVersion == 5) return "Lollipop";
+		if(majorVersion == 4) return "KitKat";
+		if(majorVersion == 8) return "The Unknown O";
+		if(majorVersion == 4 && minorVersion < 4) return "Jellybean";
 		if(majorVersion == 1 && minorVersion == 0) return "Alpha";
 		if(majorVersion == 1 && minorVersion < 5) return "Beta";
 		if(majorVersion == 1 && minorVersion == 5) return "Cupcake";
@@ -64,12 +70,6 @@ public class UseragentParser{
 		if(majorVersion == 2) return "Gingerbread";
 		if(majorVersion == 3) return "Honeycomb";
 		if(majorVersion == 4 && minorVersion == 0) return "Ice Cream Sandwich";
-		if(majorVersion == 4 && minorVersion < 4) return "Jellybean";
-		if(majorVersion == 4) return "KitKat";
-		if(majorVersion == 5) return "Lollipop";
-		if(majorVersion == 6) return "Marshmello";
-		if(majorVersion == 7) return "Nougat";
-		if(majorVersion == 8) return "The Unknown O";
 		
 		return "(Unknown codename)";
 		

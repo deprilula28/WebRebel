@@ -13,6 +13,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.util.log.Log;
 import org.json.JSONObject;
 
 import me.deprilula28.WebRebel.gui.WebRebelFrame;
@@ -20,6 +21,7 @@ import me.deprilula28.WebRebel.servlet.FolderServlet;
 import me.deprilula28.WebRebel.servlet.MainPageServlet;
 import me.deprilula28.WebRebel.socket.LiveServlet;
 import me.deprilula28.WebRebel.socket.WebRebelSocket;
+import me.deprilula28.WebRebel.updateListener.FileWatcher;
 
 public class WebRebel{
 	
@@ -42,6 +44,7 @@ public class WebRebel{
 		System.out.println();
 		
 		try{
+			Log.setLog(new LogRuleset());
 			REBEL = new WebRebel();
 		}catch(Exception e){
 			e.printStackTrace();
@@ -87,7 +90,7 @@ public class WebRebel{
 				System.out.println("Folder exists!");
 				frame.setFolder(target);
 				frame.setTask("Deleting temporary backup folder", true);
-				clear(new File("folderBackup" + File.separatorChar + "pages"), false);
+				clear(new File("folderBackup" + File.separatorChar + "path"), false);
 				System.out.println("Putting new content in");
 				new FolderCopyTask(frame, target, new File("folderBackup" + File.separatorChar + "path"));
 			}else{
@@ -124,6 +127,18 @@ public class WebRebel{
 						JOptionPane.showMessageDialog(frame, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage());
 						System.exit(-1);
 					}
+					
+					frame.setTask("Loading file listener", true);
+
+					try{
+						frame.watcher = new FileWatcher(frame.folder);
+						frame.watcher.start();
+					}catch(Exception e){
+						System.err.println("Failed to set file watcher");
+						e.printStackTrace();
+					}
+					
+					frame.finishedTask();
 				}catch(Exception e){
 					e.printStackTrace();
 					JOptionPane.showMessageDialog(frame, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage());

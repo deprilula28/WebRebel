@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import me.deprilula28.WebRebel.FolderCopyTask;
 import me.deprilula28.WebRebel.WebRebel;
+import me.deprilula28.WebRebel.updateListener.FileWatcher;
 
 
 public class WebRebelFrame extends JFrame{
@@ -27,10 +28,11 @@ public class WebRebelFrame extends JFrame{
 	private JPanel contentPane;
 	private JProgressBar taskProgressBar;
 	private JLabel taskLabel;
-	private File folder;
+	public File folder;
 	private JLabel folderSelectedLabel;
 	private JLabel requestsLabel;
 	private JTree clientTree;
+	public FileWatcher watcher;
 	
 	public WebRebelFrame(){
 		
@@ -127,6 +129,14 @@ public class WebRebelFrame extends JFrame{
 				
 				folderSelectedLabel.setText(folder.getAbsolutePath());
 				this.folder = folder;
+				if(watcher != null) watcher.stop = true;
+				try{
+					watcher = new FileWatcher(folder);
+					watcher.start();
+				}catch(Exception e){
+					System.err.println("Failed to set file watcher");
+					e.printStackTrace();
+				}
 			}
 		});
 		
@@ -138,13 +148,17 @@ public class WebRebelFrame extends JFrame{
 		taskProgressBar.setBounds(10, 104, 350, 14);
 		contentPane.add(taskProgressBar);
 		
-		JLabel statisticsLabel = new JLabel("Statistics for Paranoids");
+		JLabel statisticsLabel = new JLabel("Statistics");
 		statisticsLabel.setBounds(10, 135, 350, 14);
 		contentPane.add(statisticsLabel);
 		
 		requestsLabel = new JLabel("0 requests");
 		requestsLabel.setBounds(10, 160, 141, 14);
 		contentPane.add(requestsLabel);
+			
+		JLabel fileWatchMethodLabel = new JLabel("File Watch Method");
+		fileWatchMethodLabel.setBounds(10, 197, 141, 14);
+		contentPane.add(fileWatchMethodLabel);
 				
 	}
 	

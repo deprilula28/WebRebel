@@ -42,7 +42,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	
 	public void sendAction(Action action){
 		
-		sendResponse(new JSONObject().put("action", action.getActionType().toString()).put("id", action.getUUID().toString()).put("info", action.getJSONData().toString()));
+		sendResponse(new JSONObject().put("action", action.getActionType().toString()).put("id", action.getUUID().toString()).put("info", action.getJSONData()));
 		
 	}
 	
@@ -141,7 +141,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				break;
 			case CLIENT_CONSOLE_LOG:
 				String consoleLog = json.getJSONObject("info").getString("message");
-				System.out.println("[" + session.getRemoteAddress().getHostName() + " CONSOLE_LOG] " + consoleLog);
+				System.out.println("[" + connection.getUserAgentParser().getOperatingSystem() + " " + connection.getUserAgentParser().getBrowser() + " " + 
+						json.getJSONObject("info").getString("type").toUpperCase() + "] " + consoleLog);
 				break;
 			case CLIENT_HANDSHAKE:
 				if(shakedHands) throw new IOException("Already handshaked!");
