@@ -13,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.http.HttpStatus;
 
 import me.deprilula28.WebRebel.WebRebel;
-import me.deprilula28.WebRebel.gui.StatisticsResolver;
 
 
 public class FolderServlet extends HttpServlet{
@@ -21,7 +20,6 @@ public class FolderServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		
-		StatisticsResolver.logConnection();
 		handleFolderServlet(request, response);
 		
 	}

@@ -180,13 +180,12 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		
 	}
 	
-	public void reloadTree(){
+	public static void reloadTree(){
 		
 		WebRebel.REBEL.getFrame().getClientTree().setModel(new DefaultTreeModel(
 			new DefaultMutableTreeNode("root"){
 				{
-					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new DefaultMutableTreeNode(socket.getConnection().getUserAgentParser().getOperatingSystem() + " " +
-							socket.getConnection().getUserAgentParser().getBrowser() + (socket.isPending() ? " Pending..." : " (" + socket.getPing() + "ms)")));
+					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new ConnectionTreeNode(socket.getConnection(), socket.isPending(), socket.getPing()));
 					if(WebRebel.REBEL.getConnections().size() == 0) add(new DefaultMutableTreeNode("No connections."));
 				}
 			}

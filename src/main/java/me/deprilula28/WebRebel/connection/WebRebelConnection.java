@@ -3,8 +3,6 @@ package me.deprilula28.WebRebel.connection;
 import java.awt.Color;
 import java.net.InetSocketAddress;
 
-import me.deprilula28.WebRebel.servlet.UseragentParser;
-
 public class WebRebelConnection{
 	
 	private UseragentParser parser;

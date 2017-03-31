@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
-import me.deprilula28.WebRebel.gui.StatisticsResolver;
 import me.deprilula28.WebRebel.servlet.CommonResponses;
 
 public class LiveServlet extends WebSocketServlet{
@@ -17,7 +16,6 @@ public class LiveServlet extends WebSocketServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 		
-		StatisticsResolver.logConnection();
 		CommonResponses.errorResponse(response, "Did you expect this to work or what", 405);
 		
 	}
@@ -25,7 +23,6 @@ public class LiveServlet extends WebSocketServlet{
 	@Override
 	public void configure(WebSocketServletFactory factory){
 
-		StatisticsResolver.logConnection();
 		factory.getPolicy().setIdleTimeout(30000);
 		factory.setCreator(new SocketCreator());
 		

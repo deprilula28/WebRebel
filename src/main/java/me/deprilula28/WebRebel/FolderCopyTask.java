@@ -8,12 +8,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import me.deprilula28.WebRebel.gui.WebRebelFrame;
+import me.deprilula28.WebRebel.gui.MainFrame;
 
 public class FolderCopyTask implements Runnable{
 
 	private ScheduledExecutorService executorService;
-	private WebRebelFrame frame;
+	private MainFrame frame;
 	private long totalSumBytes;
 	private long progress;
 
@@ -64,7 +64,7 @@ public class FolderCopyTask implements Runnable{
 		
 	}
 	
-	public FolderCopyTask(WebRebelFrame frame, File source, File target) throws IOException{
+	public FolderCopyTask(MainFrame frame, File source, File target) throws IOException{
 		
 		frame.setTask("Copying folder files", false);
 		executorService = Executors.newScheduledThreadPool(1);

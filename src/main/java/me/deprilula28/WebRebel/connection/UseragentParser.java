@@ -1,11 +1,11 @@
-package me.deprilula28.WebRebel.servlet;
+package me.deprilula28.WebRebel.connection;
 
 
 public class UseragentParser{
 	
 	private String userAgentSource;
-	private String operatingSystem;
-	private String browser;
+	private OperatingSystem operatingSystem;
+	private Browser browser;
 	
 	public UseragentParser(String userAgentSource){
 		
@@ -15,47 +15,56 @@ public class UseragentParser{
 	
 	public void runParser(){
 		
-		operatingSystem = "Unknown OS";
-		browser = "Unknown Browser";
+		operatingSystem = new OperatingSystem(null, null);
+		browser = new Browser(null, null);
 		
-		if(userAgentSource.contains("Firefox/")) browser = "Firefox " + userAgentSource.split("Firefox/")[1].split(" ")[0];
-		else if(userAgentSource.contains("Edge/")) browser = "Edge" + userAgentSource.split("Edge/")[1].split(" ")[0];
-		else if(userAgentSource.contains("MSIE")) browser = "IE " + userAgentSource.split("MSIE")[1].split(";")[0];
-		else if(userAgentSource.contains("Trident/")) browser = "IE " + userAgentSource.split("rv:")[1].split(")")[0];
-		else if(userAgentSource.contains("Chrome/")) browser = "Chrome " + userAgentSource.split("Chrome/")[1].split(" ")[0];
-		else if(userAgentSource.contains("Safari/")) browser = "Safari " + userAgentSource.split("Safari/")[1].split(" ")[0];
+		try{
+		if(userAgentSource.contains("Firefox/")) browser = new Browser(BrowserType.FIREFOX, userAgentSource.split("Firefox/")[1].split(" ")[0]);
+		else if(userAgentSource.contains("Edge/")) browser = new Browser(BrowserType.EDGE, userAgentSource.split("Edge/")[1].split(" ")[0]);
+		else if(userAgentSource.contains("MSIE")) browser = new Browser(BrowserType.IE, userAgentSource.split("MSIE/")[1].split(";")[0]);
+		else if(userAgentSource.contains("Trident/")) browser = new Browser(BrowserType.IE, userAgentSource.split("rv:")[1].split(")")[0]);
+		else if(userAgentSource.contains("Chrome/")) browser = new Browser(BrowserType.CHROME, userAgentSource.split("Chrome/")[1].split(" ")[0]);
+		else if(userAgentSource.contains("Safari/")) browser = new Browser(BrowserType.SAFARI, userAgentSource.split("Safari/")[1].split(" ")[0]);
 		
-		if(userAgentSource.contains("Windows NT")) operatingSystem = "Windows " + userAgentSource.split("Windows NT ")[1].split(";")[0];
+		if(userAgentSource.contains("Windows NT")) operatingSystem = new OperatingSystem(OperatingSystemType.WINDOWS, userAgentSource.split("Windows NT ")[1].split(";")[0]);
 		else if(userAgentSource.contains("Macintosh;")){
 			String version = userAgentSource.split("Mac OS X ")[1].split("\\)")[0].replaceAll("_", ".");
-			operatingSystem = "Mac OS X " + version;
 			
 			try{
 				int majorVersion = Integer.parseInt(version.split("\\.")[1]);
-				operatingSystem = operatingSystem + " " + findVersionNameOSX(majorVersion);
+				version = version + " " + findVersionNameOSX(majorVersion);
 			}catch(Exception e){}
-		}else if(userAgentSource.contains("iPad;") || userAgentSource.contains("iPhone;")) operatingSystem = "iOS " + userAgentSource.split(" OS ")[1].split(" like ")[0]
-				.replaceAll("_", ".") + " (" + (userAgentSource.contains("iPad") ? "iPad" : "iPhone") + ")";
+			
+			operatingSystem = new OperatingSystem(OperatingSystemType.OS_X, version);
+		}else if(userAgentSource.contains("iPad;") || userAgentSource.contains("iPhone;")) operatingSystem = new OperatingSystem(OperatingSystemType.IOS, 
+				userAgentSource.split(" OS ")[1].split(" like ")[0].replaceAll("_", ".") + " (" + (userAgentSource.contains("iPad") ? "iPad" : "iPhone") + ")");
 		else if(userAgentSource.contains("Android ")){
 			String version = userAgentSource.split("Android ")[1].split(";")[0];
-			operatingSystem = "Android " + version;
+			final String unmodifiedVersion = version;
 			
 			try{
 				int majorVersion = Integer.parseInt(version.split("\\.")[0]);
 				int minorVersion = Integer.parseInt(version.split("\\.")[1]);
-				operatingSystem = operatingSystem + " " + findVersionNameAndroid(majorVersion, minorVersion);
+				version = version + " " + findVersionNameAndroid(majorVersion, minorVersion);
 			}catch(Exception e){}
 			
-			operatingSystem = operatingSystem + " (" + userAgentSource.split("Android " + version + "; ")[1].split(" Build")[0] + ")";
+			operatingSystem = new OperatingSystem(OperatingSystemType.ANDROID, version + " (" + userAgentSource.split("Android " + unmodifiedVersion + "; ")[1].split(" Build")[0] + ")");
 		}else if(userAgentSource.contains("Linux")) userAgentSource = "Linux";
-		
-		
+		}catch(Exception e){
+			System.err.println("An issue occured parsing user agent.");
+			System.err.println();
+			System.err.println("Source:");
+			System.err.println(userAgentSource);
+			System.err.println();
+			System.err.println("Error:");
+			e.printStackTrace();
+		}
 		
 	}
 
 	private String findVersionNameAndroid(int majorVersion, int minorVersion){
 
-		if(majorVersion == 6) return "Marshmello";
+		if(majorVersion == 6) return "Marshmellow";
 		if(majorVersion == 7) return "Nougat";
 		if(majorVersion == 5) return "Lollipop";
 		if(majorVersion == 4) return "KitKat";
@@ -118,16 +127,16 @@ public class UseragentParser{
 	
 	}
 	
-	public String getOperatingSystem(){
-	
+	public OperatingSystem getOperatingSystem(){
+		
 		return operatingSystem;
-	
+		
 	}
 	
-	public String getBrowser(){
-	
+	public Browser getBrowser(){
+		
 		return browser;
-	
+		
 	}
 	
 }

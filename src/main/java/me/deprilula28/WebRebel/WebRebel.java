@@ -16,7 +16,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.log.Log;
 import org.json.JSON;
 
-import me.deprilula28.WebRebel.gui.WebRebelFrame;
+import me.deprilula28.WebRebel.gui.MainFrame;
 import me.deprilula28.WebRebel.servlet.FolderServlet;
 import me.deprilula28.WebRebel.servlet.MainPageServlet;
 import me.deprilula28.WebRebel.socket.LiveServlet;
@@ -27,7 +27,7 @@ public class WebRebel{
 	
 	public static final String VERSION = "0.1_00a";
 	public static WebRebel REBEL;
-	private WebRebelFrame frame;
+	private MainFrame frame;
 	private List<WebRebelSocket> connections;
 	
 	public static void main(String[] args){
@@ -39,7 +39,7 @@ public class WebRebel{
 			e.printStackTrace();
 		}
 		System.out.println("WebRebel v" + VERSION);
-		System.out.println("<> with <3  by deprilula28");
+		System.out.println("<> with <3 by deprilula28");
 		System.out.println("-====-");
 		System.out.println();
 		
@@ -48,7 +48,8 @@ public class WebRebel{
 			REBEL = new WebRebel();
 		}catch(Exception e){
 			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Fatal error occured while loading everything:\n" + e.getClass().getName() + ": " + e.getMessage());
+			JOptionPane.showMessageDialog(null, "Fatal error occured while loading WebRebel:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
+					"Error", JOptionPane.ERROR_MESSAGE);
 			System.exit(-1);
 		}
 		
@@ -70,7 +71,7 @@ public class WebRebel{
 		
 		connections = new CopyOnWriteArrayList<>();
 		
-		frame = new WebRebelFrame();
+		frame = new MainFrame();
 
 		frame.setVisible(true);
 		
@@ -124,24 +125,27 @@ public class WebRebel{
 						server.dump(System.out);
 					}catch(Exception e){
 						e.printStackTrace();
-						JOptionPane.showMessageDialog(frame, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage());
+						JOptionPane.showMessageDialog(null, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
+								"Error", JOptionPane.ERROR_MESSAGE);
 						System.exit(-1);
 					}
 					
 					frame.setTask("Loading file listener", true);
 
-					try{
-						frame.watcher = new FileWatcher(frame.folder);
-						frame.watcher.start();
-					}catch(Exception e){
-						System.err.println("Failed to set file watcher");
-						e.printStackTrace();
-					}
+					if(frame.folder != null)
+						try{
+							frame.watcher = new FileWatcher(frame.folder);
+							frame.watcher.start();
+						}catch(Exception e){
+							System.err.println("Failed to set file watcher");
+							e.printStackTrace();
+						}
 					
 					frame.finishedTask();
 				}catch(Exception e){
 					e.printStackTrace();
-					JOptionPane.showMessageDialog(frame, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage());
+					JOptionPane.showMessageDialog(null, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
+							"Error", JOptionPane.ERROR_MESSAGE);
 					System.exit(-1);
 				}
 				
@@ -157,7 +161,7 @@ public class WebRebel{
 		
 	}
 	
-	public WebRebelFrame getFrame(){
+	public MainFrame getFrame(){
 	
 		return frame;
 	

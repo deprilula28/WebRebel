@@ -15,8 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.http.HttpStatus;
 
-import me.deprilula28.WebRebel.gui.StatisticsResolver;
-
 
 public class MainPageServlet extends HttpServlet{
 	
@@ -32,7 +30,6 @@ public class MainPageServlet extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
-		StatisticsResolver.logConnection();
 		try{
 			
 			String split = request.getServletPath().substring(1);
