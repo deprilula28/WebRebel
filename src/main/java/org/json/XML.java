@@ -137,11 +137,11 @@ public class XML {
      * @return true if the close tag is processed.
      * @throws JSONException
      */
-    private static boolean parse(XMLTokener x, JSONObject context, String name)
+    private static boolean parse(XMLTokener x, JSON context, String name)
             throws JSONException {
         char c;
         int i;
-        JSONObject jsonobject = null;
+        JSON jsonobject = null;
         String string;
         String tagName;
         Object token;
@@ -222,7 +222,7 @@ public class XML {
         } else {
             tagName = (String) token;
             token = null;
-            jsonobject = new JSONObject();
+            jsonobject = new JSON();
             for (;;) {
                 if (token == null) {
                     token = x.nextToken();
@@ -238,7 +238,7 @@ public class XML {
                             throw x.syntaxError("Missing value");
                         }
                         jsonobject.accumulate(string,
-                                JSONObject.stringToValue((String) token));
+                                JSON.stringToValue((String) token));
                         token = null;
                     } else {
                         jsonobject.accumulate(string, "");
@@ -270,7 +270,7 @@ public class XML {
                             string = (String) token;
                             if (string.length() > 0) {
                                 jsonobject.accumulate("content",
-                                        JSONObject.stringToValue(string));
+                                        JSON.stringToValue(string));
                             }
 
                         } else if (token == LT) {
@@ -300,12 +300,12 @@ public class XML {
      * This method has been deprecated in favor of the
      * {@link JSONObject.stringToValue(String)} method. Use it instead.
      * 
-     * @deprecated Use {@link JSONObject#stringToValue(String)} instead.
+     * @deprecated Use {@link JSON#stringToValue(String)} instead.
      * @param string
      * @return JSON value of this string or the string
      */
     public static Object stringToValue(String string) {
-        return JSONObject.stringToValue(string);
+        return JSON.stringToValue(string);
     }
 
     /**
@@ -324,8 +324,8 @@ public class XML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException
      */
-    public static JSONObject toJSONObject(String string) throws JSONException {
-        JSONObject jo = new JSONObject();
+    public static JSON toJSONObject(String string) throws JSONException {
+        JSON jo = new JSON();
         XMLTokener x = new XMLTokener(string);
         while (x.more() && x.skipPast("<")) {
             parse(x, jo, null);
@@ -359,13 +359,13 @@ public class XML {
             throws JSONException {
         StringBuilder sb = new StringBuilder();
         JSONArray ja;
-        JSONObject jo;
+        JSON jo;
         String key;
         Iterator<String> keys;
         String string;
         Object value;
 
-        if (object instanceof JSONObject) {
+        if (object instanceof JSON) {
 
             // Emit <tagName>
             if (tagName != null) {
@@ -375,7 +375,7 @@ public class XML {
             }
 
             // Loop thru the keys.
-            jo = (JSONObject) object;
+            jo = (JSON) object;
             keys = jo.keys();
             while (keys.hasNext()) {
                 key = keys.next();

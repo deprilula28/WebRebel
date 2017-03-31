@@ -2,7 +2,7 @@ package me.deprilula28.WebRebel.connection;
 
 import java.util.UUID;
 
-import org.json.JSONObject;
+import org.json.JSON;
 
 import me.deprilula28.WebRebel.ActionType;
 
@@ -10,9 +10,9 @@ public class Action{
 	
 	private ActionType actionType;
 	private UUID uuid;
-	private JSONObject jsonData;
+	private JSON jsonData;
 	
-	public Action(ActionType actionType, UUID uuid, JSONObject jsonData){
+	public Action(ActionType actionType, UUID uuid, JSON jsonData){
 		
 		this.actionType = actionType;
 		this.uuid = uuid;
@@ -26,7 +26,7 @@ public class Action{
 		
 	}
 	
-	public JSONObject getJSONData(){
+	public JSON getJSONData(){
 		
 		return jsonData;
 		

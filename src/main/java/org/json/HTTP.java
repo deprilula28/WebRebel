@@ -68,8 +68,8 @@ public class HTTP {
      * of the XML string.
      * @throws JSONException
      */
-    public static JSONObject toJSONObject(String string) throws JSONException {
-        JSONObject     jo = new JSONObject();
+    public static JSON toJSONObject(String string) throws JSONException {
+        JSON     jo = new JSON();
         HTTPTokener    x = new HTTPTokener(string);
         String         token;
 
@@ -124,7 +124,7 @@ public class HTTP {
      * @throws JSONException if the object does not contain enough
      *  information.
      */
-    public static String toString(JSONObject jo) throws JSONException {
+    public static String toString(JSON jo) throws JSONException {
         Iterator<String>    keys = jo.keys();
         String              string;
         StringBuilder       sb = new StringBuilder();

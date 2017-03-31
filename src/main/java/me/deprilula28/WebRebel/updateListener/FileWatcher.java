@@ -35,7 +35,8 @@ public class FileWatcher extends Thread{
 		setName("File Update Listener");
 		
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void run(){
 		

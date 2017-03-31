@@ -14,7 +14,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.util.log.Log;
-import org.json.JSONObject;
+import org.json.JSON;
 
 import me.deprilula28.WebRebel.gui.WebRebelFrame;
 import me.deprilula28.WebRebel.servlet.FolderServlet;
@@ -39,7 +39,7 @@ public class WebRebel{
 			e.printStackTrace();
 		}
 		System.out.println("WebRebel v" + VERSION);
-		System.out.println("<> with ❤  by deprilula28");
+		System.out.println("<> with <3  by deprilula28");
 		System.out.println("-====-");
 		System.out.println();
 		
@@ -83,7 +83,7 @@ public class WebRebel{
 			while(scann.hasNextLine()) stringBuilder.append(scann.nextLine());
 			scann.close();
 			
-			JSONObject json = new JSONObject(stringBuilder.toString());
+			JSON json = new JSON(stringBuilder.toString());
 			File target = new File(json.getString("originPath"));
 			
 			if(target.exists() && target.isDirectory()){

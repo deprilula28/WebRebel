@@ -13,7 +13,7 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
 import org.json.JSONException;
-import org.json.JSONObject;
+import org.json.JSON;
 
 import me.deprilula28.WebRebel.ActionType;
 import me.deprilula28.WebRebel.Errors;
@@ -42,11 +42,11 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	
 	public void sendAction(Action action){
 		
-		sendResponse(new JSONObject().put("action", action.getActionType().toString()).put("id", action.getUUID().toString()).put("info", action.getJSONData()));
+		sendResponse(new JSON().put("action", action.getActionType().toString()).put("id", action.getUUID().toString()).put("info", action.getJSONData()));
 		
 	}
 	
-	public void sendResponse(JSONObject json){
+	public void sendResponse(JSON json){
 		
 		try{
 			remoteEndpoint.sendString(json.toString());
@@ -89,7 +89,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
 		reloadTree();
-		sendAction(new Action(ActionType.SERVER_HANDSHAKE, UUID.randomUUID(), new JSONObject()));
+		sendAction(new Action(ActionType.SERVER_HANDSHAKE, UUID.randomUUID(), new JSON()));
 		
 	}
 
@@ -108,25 +108,24 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketBinary(byte[] arg0, int arg1, int arg2){
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public void onWebSocketText(String message){
 		
-		JSONObject json = null;
+		JSON json = null;
 		
 		try{
-			json = new JSONObject(message);
+			json = new JSON(message);
 			ActionType action = ActionType.valueOf(json.getString("action"));
 			
 			if(!shakedHands && !action.equals(ActionType.CLIENT_HANDSHAKE)){
-				sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSONObject().put("error", Errors.INVALID_INPUT)
+				sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", Errors.INVALID_INPUT)
 						.put("errorMessage", "Handshake must be completed first!")));
 				return;
 			}
 			
 			switch(action){
 			case CLIENT_ERROR:
-				JSONObject error = json.getJSONObject("info");
+				JSON error = json.getJSONObject("info");
 				String errorTag = error.getString("error");
 				String errorMessage = error.getString("message");
 				
@@ -160,12 +159,14 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				pending = false;
 				reloadTree();
 				break;
+			default:
+				throw new IOException("Invalid request type");
 			}
 		}catch(JSONException e){
 			System.err.println("Invalid message received");
 			e.printStackTrace();
 		}catch(Exception e){
-			sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSONObject().put("error", Errors.INVALID_INPUT)
+			sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", Errors.INVALID_INPUT)
 					.put("errorMessage", e.getMessage())));
 			System.err.println("Internal server error");
 			e.printStackTrace();
@@ -205,7 +206,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		if(lastPing > 0) pending = true;
 		else{
 			lastPing = System.currentTimeMillis();
-			sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSONObject()));
+			sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSON()));
 		}
 		
 	}

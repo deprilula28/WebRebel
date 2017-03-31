@@ -172,7 +172,7 @@ public class JSONPointer {
 
     /**
      * Evaluates this JSON Pointer on the given {@code document}. The {@code document}
-     * is usually a {@link JSONObject} or a {@link JSONArray} instance, but the empty
+     * is usually a {@link JSON} or a {@link JSONArray} instance, but the empty
      * JSON Pointer ({@code ""}) can be evaluated on any JSON values and in such case the
      * returned value will be {@code document} itself. 
      * 
@@ -186,8 +186,8 @@ public class JSONPointer {
         }
         Object current = document;
         for (String token : refTokens) {
-            if (current instanceof JSONObject) {
-                current = ((JSONObject) current).opt(unescape(token));
+            if (current instanceof JSON) {
+                current = ((JSON) current).opt(unescape(token));
             } else if (current instanceof JSONArray) {
                 current = readByIndexToken(current, token);
             } else {

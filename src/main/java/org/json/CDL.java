@@ -133,7 +133,7 @@ public class CDL {
      * @return A JSONObject combining the names and values.
      * @throws JSONException
      */
-    public static JSONObject rowToJSONObject(JSONArray names, JSONTokener x)
+    public static JSON rowToJSONObject(JSONArray names, JSONTokener x)
             throws JSONException {
         JSONArray ja = rowToJSONArray(x);
         return ja != null ? ja.toJSONObject(names) :  null;
@@ -226,7 +226,7 @@ public class CDL {
         }
         JSONArray ja = new JSONArray();
         for (;;) {
-            JSONObject jo = rowToJSONObject(names, x);
+            JSON jo = rowToJSONObject(names, x);
             if (jo == null) {
                 break;
             }
@@ -248,7 +248,7 @@ public class CDL {
      * @throws JSONException
      */
     public static String toString(JSONArray ja) throws JSONException {
-        JSONObject jo = ja.optJSONObject(0);
+        JSON jo = ja.optJSONObject(0);
         if (jo != null) {
             JSONArray names = jo.names();
             if (names != null) {
@@ -274,7 +274,7 @@ public class CDL {
         }
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < ja.length(); i += 1) {
-            JSONObject jo = ja.optJSONObject(i);
+            JSON jo = ja.optJSONObject(i);
             if (jo != null) {
                 sb.append(rowToString(jo.toJSONArray(names)));
             }

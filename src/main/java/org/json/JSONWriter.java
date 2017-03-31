@@ -78,7 +78,7 @@ public class JSONWriter {
     /**
      * The object/array stack.
      */
-    private final JSONObject stack[];
+    private final JSON stack[];
 
     /**
      * The stack top index. A value of 0 indicates that the stack is empty.
@@ -96,7 +96,7 @@ public class JSONWriter {
     public JSONWriter(Writer w) {
         this.comma = false;
         this.mode = 'i';
-        this.stack = new JSONObject[maxdepth];
+        this.stack = new JSON[maxdepth];
         this.top = 0;
         this.writer = w;
     }
@@ -209,7 +209,7 @@ public class JSONWriter {
                 if (this.comma) {
                     this.writer.write(',');
                 }
-                this.writer.write(JSONObject.quote(string));
+                this.writer.write(JSON.quote(string));
                 this.writer.write(':');
                 this.comma = false;
                 this.mode = 'o';
@@ -237,7 +237,7 @@ public class JSONWriter {
         }
         if (this.mode == 'o' || this.mode == 'a') {
             this.append("{");
-            this.push(new JSONObject());
+            this.push(new JSON());
             this.comma = false;
             return this;
         }
@@ -272,7 +272,7 @@ public class JSONWriter {
      * @param jo The scope to open.
      * @throws JSONException If nesting is too deep.
      */
-    private void push(JSONObject jo) throws JSONException {
+    private void push(JSON jo) throws JSONException {
         if (this.top >= maxdepth) {
             throw new JSONException("Nesting too deep.");
         }
@@ -322,6 +322,6 @@ public class JSONWriter {
      * @throws JSONException If the value is out of sequence.
      */
     public JSONWriter value(Object object) throws JSONException {
-        return this.append(JSONObject.valueToString(object));
+        return this.append(JSON.valueToString(object));
     }
 }

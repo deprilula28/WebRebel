@@ -56,7 +56,7 @@ public class JSONML {
         String     closeTag = null;
         int        i;
         JSONArray  newja = null;
-        JSONObject newjo = null;
+        JSON newjo = null;
         Object     token;
         String     tagName = null;
 
@@ -138,7 +138,7 @@ public class JSONML {
                     }
                     tagName = (String)token;
                     newja = new JSONArray();
-                    newjo = new JSONObject();
+                    newjo = new JSON();
                     if (arrayForm) {
                         newja.put(tagName);
                         if (ja != null) {
@@ -174,7 +174,7 @@ public class JSONML {
                             if (!(token instanceof String)) {
                                 throw x.syntaxError("Missing value");
                             }
-                            newjo.accumulate(attribute, JSONObject.stringToValue((String)token));
+                            newjo.accumulate(attribute, JSON.stringToValue((String)token));
                             token = null;
                         } else {
                             newjo.accumulate(attribute, "");
@@ -227,7 +227,7 @@ public class JSONML {
             } else {
                 if (ja != null) {
                     ja.put(token instanceof String
-                        ? JSONObject.stringToValue((String)token)
+                        ? JSON.stringToValue((String)token)
                         : token);
                 }
             }
@@ -282,8 +282,8 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException
      */
-    public static JSONObject toJSONObject(XMLTokener x) throws JSONException {
-           return (JSONObject)parse(x, false, null);
+    public static JSON toJSONObject(XMLTokener x) throws JSONException {
+           return (JSON)parse(x, false, null);
     }
 
 
@@ -300,7 +300,7 @@ public class JSONML {
      * @return A JSONObject containing the structured data from the XML string.
      * @throws JSONException
      */
-    public static JSONObject toJSONObject(String string) throws JSONException {
+    public static JSON toJSONObject(String string) throws JSONException {
         return toJSONObject(new XMLTokener(string));
     }
 
@@ -313,7 +313,7 @@ public class JSONML {
      */
     public static String toString(JSONArray ja) throws JSONException {
         int                 i;
-        JSONObject          jo;
+        JSON          jo;
         String              key;
         Iterator<String>    keys;
         int                 length;
@@ -331,9 +331,9 @@ public class JSONML {
         sb.append(tagName);
 
         object = ja.opt(1);
-        if (object instanceof JSONObject) {
+        if (object instanceof JSON) {
             i = 2;
-            jo = (JSONObject)object;
+            jo = (JSON)object;
 
 // Emit the attributes
 
@@ -369,8 +369,8 @@ public class JSONML {
                 if (object != null) {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
-                    } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject)object));
+                    } else if (object instanceof JSON) {
+                        sb.append(toString((JSON)object));
                     } else if (object instanceof JSONArray) {
                         sb.append(toString((JSONArray)object));
                     } else {
@@ -395,7 +395,7 @@ public class JSONML {
      * @return An XML string.
      * @throws JSONException
      */
-    public static String toString(JSONObject jo) throws JSONException {
+    public static String toString(JSON jo) throws JSONException {
         StringBuilder sb = new StringBuilder();
         int                 i;
         JSONArray           ja;
@@ -450,8 +450,8 @@ public class JSONML {
                 if (object != null) {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
-                    } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject)object));
+                    } else if (object instanceof JSON) {
+                        sb.append(toString((JSON)object));
                     } else if (object instanceof JSONArray) {
                         sb.append(toString((JSONArray)object));
                     } else {

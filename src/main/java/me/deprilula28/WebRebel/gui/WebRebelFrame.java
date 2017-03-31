@@ -16,7 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
-import org.json.JSONObject;
+import org.json.JSON;
 
 import me.deprilula28.WebRebel.FolderCopyTask;
 import me.deprilula28.WebRebel.WebRebel;
@@ -114,7 +114,7 @@ public class WebRebelFrame extends JFrame{
 					FileWriter writer = new FileWriter(metadataFile);
 					
 					try{
-						writer.write(new JSONObject().put("originPath", folder.getAbsolutePath()).toString());
+						writer.write(new JSON().put("originPath", folder.getAbsolutePath()).toString());
 					}catch(Exception e2){
 						System.err.println("Failed to write metadata file.");
 						e2.printStackTrace();
