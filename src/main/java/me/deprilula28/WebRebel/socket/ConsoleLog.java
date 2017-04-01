@@ -34,4 +34,11 @@ public class ConsoleLog{
 		
 	}
 	
+	@Override
+	public String toString(){
+		
+		return message;
+		
+	}
+	
 }

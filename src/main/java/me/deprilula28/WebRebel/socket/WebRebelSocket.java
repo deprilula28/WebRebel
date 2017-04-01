@@ -42,6 +42,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		executorService = Executors.newScheduledThreadPool(1);
 		this.connection = connection;
 		
+		consoleLogs = new ArrayList<>();
+		
 	}
 	
 	public void sendAction(Action action){
@@ -78,7 +80,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketClose(int code, String message){
 
 		executorService.shutdown();
-		System.out.println("New Connection from " + connection.toString() + " (" + connection.getIp() + ")");
+		System.out.println("(" + connection.toString() + ") Disconnected");
 		WebRebel.REBEL.getConnections().remove(this);
 		reloadTree();
 		
@@ -88,7 +90,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketConnect(Session session){
 		
 		connection.getUserAgentParser().runParser();
-		System.out.println("New Connection from " + connection.toString() + " (" + connection.getIp() + ")");
+		System.out.println("(" + connection.toString() + ") Connected");
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
@@ -132,9 +134,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				JSON error = json.getJSONObject("info");
 				String errorTag = error.getString("error");
 				String errorMessage = error.getString("message");
-				
-				System.err.println("Client returned error (" + connection.getIp() + ")");
-				System.err.println(errorTag + ": " + errorMessage);
+
+				System.err.println("(" + connection.toString() + ") WebRebel Error >> " + errorTag + ": " + errorMessage);
 				break;
 			case CLIENT_REQUEST_CODE_EDIT_PERM:
 				if(connection.isCodeEditingPermissable()) throw new IOException("Already permissable!");
@@ -152,7 +153,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				}
 				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace);
 				consoleLogs.add(logInstance);
-				System.out.println("Console." + info.getString("type").toLowerCase() + " [" + connection.toString() + "]: " + logInstance.toString());
+				System.out.println("(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + logInstance.toString());
 				break;
 			case CLIENT_HANDSHAKE:
 				if(shakedHands) throw new IOException("Already handshaked!");
@@ -169,6 +170,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				lastPing = -1;
 				pending = false;
 				reloadTree();
+				
+				sendAction(new Action(ActionType.SERVER_CLIENT_PING_INFO, UUID.randomUUID(), JSON.json("ping", ping)));
 				break;
 			default:
 				throw new IOException("Invalid request type");
@@ -213,8 +216,10 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	@Override
 	public void run(){
 		
-		if(lastPing > 0) pending = true;
-		else{
+		if(lastPing > 0){
+			if(!pending) System.err.println("(" + connection.toString() + ") Connection pending...");
+			pending = true;
+		}else{
 			lastPing = System.currentTimeMillis();
 			sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSON()));
 		}
