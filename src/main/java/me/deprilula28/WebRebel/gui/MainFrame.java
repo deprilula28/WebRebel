@@ -30,7 +30,6 @@ import me.deprilula28.WebRebel.connection.BrowserType;
 import me.deprilula28.WebRebel.connection.OperatingSystemType;
 import me.deprilula28.WebRebel.connection.UseragentParser;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
-import me.deprilula28.WebRebel.socket.ConnectionTreeNode;
 import me.deprilula28.WebRebel.updateListener.FileWatcher;
 
 public class MainFrame extends JFrame implements TreeCellRenderer{
@@ -53,12 +52,12 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 	
 	private Image noEntry;
 	
-	private Image unknown;
-	private Image osx;
-	private Image windows;
-	private Image linux;
-	private Image android;
-	private Image ios;
+	public Image unknown;
+	public Image osx;
+	public Image windows;
+	public Image linux;
+	public Image android;
+	public Image ios;
 	
 	private Image chrome;
 	private Image firefox;
@@ -340,6 +339,12 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		
 		return treeCellRenderer.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
 		
+	}
+	
+	public ConsoleViewFrame getConsoleViewFrame(){
+	
+		return consoleViewFrame;
+	
 	}
 	
 }

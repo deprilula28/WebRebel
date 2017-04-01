@@ -25,6 +25,16 @@ public class Browser{
 	}
 
 	@Override
+	public boolean equals(Object obj){
+		
+		if(!(obj instanceof Browser)) return false;
+		Browser br = (Browser) obj;
+		
+		return br.type.equals(type) && br.version.equals(version);
+		
+	}
+	
+	@Override
 	public String toString(){
 		
 		String typ = type == null ? "Unknown Browser" : type.toString();

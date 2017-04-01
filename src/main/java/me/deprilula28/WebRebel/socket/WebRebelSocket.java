@@ -2,7 +2,9 @@ package me.deprilula28.WebRebel.socket;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -18,13 +20,19 @@ import org.json.JSON;
 import org.json.JSONException;
 
 import me.deprilula28.WebRebel.ActionType;
-import me.deprilula28.WebRebel.Errors;
 import me.deprilula28.WebRebel.WebRebel;
 import me.deprilula28.WebRebel.connection.Action;
+import me.deprilula28.WebRebel.connection.Browser;
+import me.deprilula28.WebRebel.connection.OperatingSystem;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
+import me.deprilula28.WebRebel.gui.BrowserTreeNode;
+import me.deprilula28.WebRebel.gui.ConnectionTreeNode;
+import me.deprilula28.WebRebel.gui.ConsoleViewFrame;
+import me.deprilula28.WebRebel.gui.OperatingSystemTreeNode;
 
 public class WebRebelSocket implements WebSocketListener, Runnable{
-
+	
+	public static Map<WebRebelConnection, List<ConsoleLog>> logs = new HashMap<>();
 	private ScheduledExecutorService executorService;
 	private WebRebelConnection connection;
 	private RemoteEndpoint remoteEndpoint;
@@ -35,14 +43,10 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	private int ping;
 	private boolean pending;
 	
-	private List<ConsoleLog> consoleLogs;
-	
 	public WebRebelSocket(WebRebelConnection connection){
 
 		executorService = Executors.newScheduledThreadPool(1);
 		this.connection = connection;
-		
-		consoleLogs = new ArrayList<>();
 		
 	}
 	
@@ -94,8 +98,11 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
+		WebRebel.REBEL.getFrame().getConsoleViewFrame().genConnStyle(connection);
 		reloadTree();
 		sendAction(new Action(ActionType.SERVER_HANDSHAKE, UUID.randomUUID(), new JSON()));
+		
+		logs.put(connection, new ArrayList<>());
 		
 	}
 
@@ -124,7 +131,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 			ActionType action = ActionType.valueOf(json.getString("action"));
 			
 			if(!shakedHands && !action.equals(ActionType.CLIENT_HANDSHAKE)){
-				sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", Errors.INVALID_INPUT)
+				sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", "Invalid input")
 						.put("errorMessage", "Handshake must be completed first!")));
 				return;
 			}
@@ -152,7 +159,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 					for(Object cur : info.getJSONArray("stackTrace").myArrayList) stackTrace.add((String) cur);
 				}
 				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace);
-				consoleLogs.add(logInstance);
+				logs.get(connection).add(logInstance);
+				WebRebel.REBEL.getFrame().getConsoleViewFrame().addMessage(connection, logInstance);
 				System.out.println("(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + logInstance.toString());
 				break;
 			case CLIENT_HANDSHAKE:
@@ -180,7 +188,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 			System.err.println("Invalid message received");
 			e.printStackTrace();
 		}catch(Exception e){
-			sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", Errors.INVALID_INPUT)
+			sendAction(new Action(ActionType.SERVER_ERROR_RESPONSE, UUID.fromString(json.getString("id")), new JSON().put("error", "Invalid Input")
 					.put("errorMessage", e.getMessage())));
 			System.err.println("Internal server error");
 			e.printStackTrace();
@@ -196,14 +204,56 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	
 	public static void reloadTree(){
 		
-		WebRebel.REBEL.getFrame().getClientTree().setModel(new DefaultTreeModel(
+		DefaultTreeModel model = new DefaultTreeModel(
 			new DefaultMutableTreeNode("root"){
 				{
 					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new ConnectionTreeNode(socket.getConnection(), socket.isPending(), socket.getPing()));
 					if(WebRebel.REBEL.getConnections().size() == 0) add(new DefaultMutableTreeNode("No connections."));
 				}
 			}
-		));
+		);
+		WebRebel.REBEL.getFrame().getClientTree().setModel(model);
+		
+		//TODO Make this look better
+		ConsoleViewFrame frame = WebRebel.REBEL.getFrame().getConsoleViewFrame();
+		
+		switch(frame.getFilterTypeComboBox().getSelectedIndex()){
+		case 0:
+			frame.getFilterTree().setModel(model);
+			break;
+		case 1:
+			frame.getFilterTree().setModel(new DefaultTreeModel(
+				new DefaultMutableTreeNode("root"){
+					{
+						List<OperatingSystem> dealtWith = new ArrayList<>();
+						for(WebRebelSocket socket : WebRebel.REBEL.getConnections()){
+							OperatingSystem os = socket.getConnection().getUserAgentParser().getOperatingSystem();
+							if(dealtWith.contains(os)) continue;
+							
+							dealtWith.add(os);
+							add(new OperatingSystemTreeNode(os));
+						}
+					}
+				}
+			));
+			break;
+		case 2:
+			frame.getFilterTree().setModel(new DefaultTreeModel(
+				new DefaultMutableTreeNode("root"){
+					{
+						List<Browser> dealtWith = new ArrayList<>();
+						for(WebRebelSocket socket : WebRebel.REBEL.getConnections()){
+							Browser browser = socket.getConnection().getUserAgentParser().getBrowser();
+							if(dealtWith.contains(browser)) continue;
+							
+							dealtWith.add(browser);
+							add(new BrowserTreeNode(browser));
+						}
+					}
+				}
+			));
+			break;
+		}
 		
 	}
 	

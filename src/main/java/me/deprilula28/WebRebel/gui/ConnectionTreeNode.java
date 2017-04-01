@@ -1,4 +1,4 @@
-package me.deprilula28.WebRebel.socket;
+package me.deprilula28.WebRebel.gui;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
