@@ -1,6 +1,8 @@
 package me.deprilula28.WebRebel.socket;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -12,8 +14,8 @@ import javax.swing.tree.DefaultTreeModel;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WebSocketListener;
-import org.json.JSONException;
 import org.json.JSON;
+import org.json.JSONException;
 
 import me.deprilula28.WebRebel.ActionType;
 import me.deprilula28.WebRebel.Errors;
@@ -32,6 +34,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	private long lastPing;
 	private int ping;
 	private boolean pending;
+	
+	private List<ConsoleLog> consoleLogs;
 	
 	public WebRebelSocket(WebRebelConnection connection){
 
@@ -74,7 +78,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketClose(int code, String message){
 
 		executorService.shutdown();
-		System.out.println("Disconnected: " + connection.getUserAgentParser().getBrowser() + ", " + connection.getUserAgentParser().getOperatingSystem() + ", " + connection.getIp());
+		System.out.println("New Connection from " + connection.toString() + " (" + connection.getIp() + ")");
 		WebRebel.REBEL.getConnections().remove(this);
 		reloadTree();
 		
@@ -84,7 +88,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketConnect(Session session){
 		
 		connection.getUserAgentParser().runParser();
-		System.out.println("Connected: " + connection.getUserAgentParser().getBrowser() + ", " + connection.getUserAgentParser().getOperatingSystem() + ", " + connection.getIp());
+		System.out.println("New Connection from " + connection.toString() + " (" + connection.getIp() + ")");
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
@@ -105,7 +109,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	}
 
 	@Override
-	public void onWebSocketBinary(byte[] arg0, int arg1, int arg2){
+	public void onWebSocketBinary(byte[] data, int idk, int idkEither){
 	}
 
 	@Override
@@ -139,9 +143,16 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				if(!connection.isCodeEditingPermissable()) throw new IOException("Access denied.");
 				break;
 			case CLIENT_CONSOLE_LOG:
-				String consoleLog = json.getJSONObject("info").getString("message");
-				System.out.println("[" + connection.getUserAgentParser().getOperatingSystem() + " " + connection.getUserAgentParser().getBrowser() + " " + 
-						json.getJSONObject("info").getString("type").toUpperCase() + "] " + consoleLog);
+				JSON info = json.getJSONObject("info");
+				List<String> stackTrace = null;
+				
+				if(info.has("stackTrace")){
+					stackTrace = new ArrayList<>();
+					for(Object cur : info.getJSONArray("stackTrace").myArrayList) stackTrace.add((String) cur);
+				}
+				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace);
+				consoleLogs.add(logInstance);
+				System.out.println("Console." + info.getString("type").toLowerCase() + " [" + connection.toString() + "]: " + logInstance.toString());
 				break;
 			case CLIENT_HANDSHAKE:
 				if(shakedHands) throw new IOException("Already handshaked!");

@@ -2,6 +2,10 @@
     border: 0
     padding: 0
     overflow: hidden
+    margin-top: 0px
+    margin-right: 0px
+    margin-bottom: 0px
+    margin-left: 0px
 
 iframe
     width: 100vw
@@ -18,8 +22,70 @@ html, body
     width: 100vw
 
 .bottomBarWrapper
+    display: block
     position: fixed
-    bottom: 0
-    height: 10px
-    background-color: teal
+    overflow: 
+    left: 0px
+    height: 30px
+    width: 100vw
     z-index: 99
+
+.mainImg
+   position: fixed
+   font-size: 5em
+   margin-left: 0px !important
+
+   p
+     margin-left: -20px !important
+   &:nth-child(1)
+     margin-left: 0px !important
+
+
+.paragraph
+   position: fixed
+
+p:not(.paragraph)
+   font-family: Consolas,monaco,monospace
+   margin-top: 8px !important
+   margin-left: -4px
+   margin-right: 0px
+   margin-bottom: 5px
+   padding: 0
+   color: white
+   display: inline
+
+.leftFakeSyntaxHighlight
+  margin-left: 18px !important
+
+.bottomBarWrapper
+    opacity: 0
+
+.cellularSignalIcon
+  width: 0px
+  height: 0px
+  border: 8px
+  margin-right: 0
+  overflow: hidden
+  border-style: solid
+  border-color: rgba(0,0,0,0) #bababa #bababa rgba(0,0,0,0)
+  
+.cellularSignalIcon:not(.green)
+  position: relative
+  top: -16px
+  left: 120px
+
+.greenIconMaster
+  position: relative
+  top: -32px
+  left: 120px
+  overflow: hidden
+  width: 16px
+  height: 16px
+  
+.green
+  border-color: rgba(0,0,0,0) #29db61 #29db61 rgba(0,0,0,0)
+  
+.progress
+  background-color: green
+  width: 16px
+  height: 16px

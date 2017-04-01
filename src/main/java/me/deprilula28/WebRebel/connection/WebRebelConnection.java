@@ -41,4 +41,11 @@ public class WebRebelConnection{
 	
 	}
 	
+	@Override
+	public String toString(){
+		
+		return parser.getOperatingSystem().toString() + " " + parser.getBrowser().toString();
+		
+	}
+	
 }
