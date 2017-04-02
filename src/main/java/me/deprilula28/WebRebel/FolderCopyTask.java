@@ -66,9 +66,9 @@ public class FolderCopyTask implements Runnable{
 	
 	public FolderCopyTask(MainFrame frame, File source, File target) throws IOException{
 		
-		frame.setTask("Copying folder files", false);
+		frame.setTask("Copying files", false);
 		executorService = Executors.newScheduledThreadPool(1);
-		executorService.scheduleAtFixedRate(this, 0l, 1l, TimeUnit.SECONDS);
+		executorService.scheduleAtFixedRate(this, 0l, 250l, TimeUnit.MILLISECONDS);
 		
 		this.frame = frame;
 		totalSumBytes = getSize(source);

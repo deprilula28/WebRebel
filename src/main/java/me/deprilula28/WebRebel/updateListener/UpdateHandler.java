@@ -3,22 +3,13 @@ package me.deprilula28.WebRebel.updateListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.UUID;
 
-import org.json.JSONArray;
 import org.json.JSON;
+import org.json.JSONArray;
 
-import difflib.ChangeDelta;
-import difflib.DeleteDelta;
-import difflib.Delta;
-import difflib.DiffUtils;
-import difflib.InsertDelta;
-import difflib.Patch;
 import me.deprilula28.WebRebel.ActionType;
 import me.deprilula28.WebRebel.WebRebel;
 import me.deprilula28.WebRebel.connection.Action;
@@ -26,11 +17,12 @@ import me.deprilula28.WebRebel.socket.WebRebelSocket;
 
 public class UpdateHandler{
 	
-	public static void doFileUpdate(File oldFile, File newFile, String extension) throws Exception{
+	public static void doFileUpdate(File oldFile, File newFile, String relativePath, String extension) throws Exception{
 		
 		WebRebel.REBEL.getFrame().setTask("Parsing changes...", true);
-		List<String> oldLines = read(oldFile);
+		//List<String> oldLines = read(oldFile);
 		List<String> newLines = read(newFile);
+		/*
 		long start = System.currentTimeMillis();
 		Patch patch = DiffUtils.diff(oldLines, newLines);
 		long time = System.currentTimeMillis() - start;
@@ -48,12 +40,22 @@ public class UpdateHandler{
 			else if(delta instanceof ChangeDelta) for(int i = 0; i < linesRevised.size(); i ++) changes.put(pos + i, (String) linesRevised.get(i));
 			else if(delta instanceof InsertDelta) for(int i = 0; i < linesRevised.size(); i ++) insertions.put(pos + i, (String) linesRevised.get(i));
 		}
+		*/
 		
 		//File change action
 		WebRebel.REBEL.getFrame().setTask("Sending changes...", true);
 		JSON json = new JSON();
 		json.put("type", extension);
-		json.put("source", extension);
+	
+		if(File.separatorChar == '\\') relativePath = relativePath.replaceAll("\\\\", "/");
+		relativePath = relativePath.substring(1);
+		json.put("source", relativePath);
+		
+		JSONArray lines = new JSONArray();
+		for(String cur : newLines) lines.put(cur);
+		json.put("lines", lines);
+		
+		/*
 		json.put("parseTime", time);
 
 		JSONArray deletionsArray = new JSONArray();
@@ -67,12 +69,15 @@ public class UpdateHandler{
 		JSON insertionsMap = new JSON();
 		for(Entry<Integer, String> cur : insertions.entrySet()) insertionsMap.put(String.valueOf(cur.getKey()), cur.getValue());
 		json.put("insertions", insertionsMap);
+		*/
+		
+		//TODO Find a better library for code changes
 		
 		Action action = new Action(ActionType.SERVER_CODE_UPDATE, UUID.randomUUID(), json);
 		for(WebRebelSocket cur : WebRebel.REBEL.getConnections()) cur.sendAction(action);
 		WebRebel.REBEL.getFrame().finishedTask();
 		
-		System.out.println("Parsed server code updates in " + time + "ms, +" + insertions.size() + " -" + deletions.size() + " <>" + changes.size());
+		System.out.println("Streamed code changes successfully.");
 		
 	}
 	

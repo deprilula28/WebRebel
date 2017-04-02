@@ -6,13 +6,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -25,17 +29,20 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 
+import org.json.JSON;
+
+import me.deprilula28.WebRebel.FolderCopyTask;
 import me.deprilula28.WebRebel.WebRebel;
 import me.deprilula28.WebRebel.connection.BrowserType;
 import me.deprilula28.WebRebel.connection.OperatingSystemType;
 import me.deprilula28.WebRebel.connection.UseragentParser;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
-import me.deprilula28.WebRebel.updateListener.FileWatcher;
+import me.deprilula28.WebRebel.updateListener.FolderWatcher;
 
 public class MainFrame extends JFrame implements TreeCellRenderer{
 	
 	public ConsoleViewFrame consoleViewFrame;
-	public FileWatcher watcher;
+	public FolderWatcher watcher;
 	public File folder;
 	private JPanel contentPane;
 	private JLabel taskLabel;
@@ -132,6 +139,77 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		gbc_folderSelectedLabel.gridx = 1;
 		gbc_folderSelectedLabel.gridy = 1;
 		contentPane.add(folderSelectedLabel, gbc_folderSelectedLabel);
+		folderSelectedLabel.addMouseListener(new MouseAdapter(){
+			
+			@Override
+			public void mouseClicked(MouseEvent e){
+			
+				try{
+					JFileChooser fileChooser = new JFileChooser();		
+					fileChooser.setDialogTitle("Directory for input");		
+					fileChooser.setCurrentDirectory(new File("."));		
+					fileChooser.setAcceptAllFileFilterUsed(false);		
+					fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);		
+					int returnValue = fileChooser.showOpenDialog(MainFrame.this);		
+					 					
+		 			if(returnValue == JFileChooser.APPROVE_OPTION){		
+		 				setTask("Cleaning old folder", true);		
+		 				WebRebel.clear(new File("folderBackup" + File.separatorChar + "path"), false);		
+		 						
+		 				File folder = fileChooser.getSelectedFile() == null ? fileChooser.getCurrentDirectory() : fileChooser.getSelectedFile();		
+		 				System.out.println("Selected folder: " + folder.getAbsolutePath());		
+		 						
+		 				try{		
+		 					new FolderCopyTask(MainFrame.this, folder, new File("folderBackup" + File.separatorChar + "path"));		
+		 				}catch(Exception e3){		
+		 					System.err.println("Failed to load selected folder:");		
+		 					e3.printStackTrace();		
+		 				}		
+		 						
+		 				setTask("Configuring metadata file", true);		
+		 				File metadataFile = new File("folderBackup" + File.separatorChar + "metadata.json");		
+		 				if(metadataFile.exists()) metadataFile.delete();		
+		 				try{		
+		 					metadataFile.createNewFile();		
+		 				}catch(IOException e3){		
+		 					e3.printStackTrace();		
+		 				}		
+		 						
+		 				try{		
+		 					FileWriter writer = new FileWriter(metadataFile);		
+		 							
+		 					try{		
+		 						writer.write(new JSON().put("originPath", folder.getAbsolutePath()).toString());		
+		 					}catch(Exception e2){		
+		 						System.err.println("Failed to write metadata file.");		
+		 						e2.printStackTrace();		
+		 					}finally{		
+		 						writer.close();		
+		 					}		
+		 				}catch(IOException e3){		
+		 					System.err.println("Failed to write file.");		
+		 					e3.printStackTrace();		
+		 				}		
+		 				finishedTask();		
+		 						
+		 				folderSelectedLabel.setText(folder.getAbsolutePath());		
+		 			setFolder(folder);
+		 				if(watcher != null) watcher.stop = true;		
+		 				try{		
+		 					watcher = new FolderWatcher(folder);		
+		 					watcher.start();		
+		 				}catch(Exception e3){		
+		 					System.err.println("Failed to set file watcher");		
+		 					e3.printStackTrace();		
+		 				}		
+		 			}
+				}catch(Exception e2){
+					e2.printStackTrace();
+				}
+				
+			}
+			
+		});
 		
 		taskLabel = new JLabel("No Task");
 		GridBagConstraints gbc_taskLabel = new GridBagConstraints();

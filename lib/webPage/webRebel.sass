@@ -35,7 +35,7 @@ html, body
    font-size: 5em
    margin-left: 0px !important
 
-   p
+   p:not(.nomargin)
      margin-left: -20px !important
    &:nth-child(1)
      margin-left: 0px !important
@@ -60,8 +60,11 @@ p:not(.paragraph):not(.ping)
   left: 128px
   color: #29db61
   
-.leftFakeSyntaxHighlight
+.leftFakeSyntaxHighlight:not(.nomargin)
   margin-left: 18px !important
+
+.nomargin
+  margin-left: 0px !important
 
 .bottomBarWrapper
     opacity: 0

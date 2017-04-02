@@ -21,7 +21,7 @@ import me.deprilula28.WebRebel.servlet.FolderServlet;
 import me.deprilula28.WebRebel.servlet.MainPageServlet;
 import me.deprilula28.WebRebel.socket.LiveServlet;
 import me.deprilula28.WebRebel.socket.WebRebelSocket;
-import me.deprilula28.WebRebel.updateListener.FileWatcher;
+import me.deprilula28.WebRebel.updateListener.FolderWatcher;
 
 public class WebRebel{
 	
@@ -134,7 +134,7 @@ public class WebRebel{
 
 					if(frame.folder != null)
 						try{
-							frame.watcher = new FileWatcher(frame.folder);
+							frame.watcher = new FolderWatcher(frame.folder);
 							frame.watcher.start();
 						}catch(Exception e){
 							System.err.println("Failed to set file watcher");

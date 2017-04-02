@@ -39,7 +39,7 @@ html, body {
   margin-left: 0px !important;
 }
 
-.mainImg p {
+.mainImg p:not(.nomargin) {
   margin-left: -20px !important;
 }
 
@@ -69,8 +69,12 @@ p:not(.paragraph):not(.ping) {
   color: #29db61;
 }
 
-.leftFakeSyntaxHighlight {
+.leftFakeSyntaxHighlight:not(.nomargin) {
   margin-left: 18px !important;
+}
+
+.nomargin {
+  margin-left: 0px !important;
 }
 
 .bottomBarWrapper {
