@@ -33,7 +33,7 @@ public class CommonResponses{
 		
 		FileInputStream inputStream = new FileInputStream(file);
 		OutputStream outputStream = response.getOutputStream();
-		response.setStatus(HttpStatus.FOUND_302);
+		response.setStatus(HttpStatus.OK_200);
 		byte[] outputByte = new byte[4096];
 		int c = 0;
 		long uploadedBytes = 0l;

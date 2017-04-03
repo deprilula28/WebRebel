@@ -45,10 +45,19 @@ public class MainPageServlet extends HttpServlet{
 				while(scann.hasNextLine()) stringBuilder.append(scann.nextLine());
 				scann.close();
 				
-				response.setStatus(HttpStatus.FOUND_302);
+				response.setStatus(HttpStatus.OK_200);
 				response.getWriter().append(stringBuilder.toString());
 			}else if(request.getServletPath().startsWith("/folder/")) FolderServlet.handleFolderServlet(request, response);
-			else CommonResponses.notFoundResponse(response);
+			else if(request.getServletPath().equals("/index/")){
+				Scanner scann = new Scanner(new FileInputStream(new File("lib" + File.separatorChar + "webPage" + File.separatorChar + "index.html")));
+				StringBuilder stringBuilder = new StringBuilder();
+				
+				while(scann.hasNextLine()) stringBuilder.append(scann.nextLine());
+				scann.close();
+				
+				response.setStatus(HttpStatus.OK_200);
+				response.getWriter().append(stringBuilder.toString());
+			}else CommonResponses.notFoundResponse(response);
 		}catch(FileNotFoundException e){
 			System.err.println("File not found:");
 			e.printStackTrace();

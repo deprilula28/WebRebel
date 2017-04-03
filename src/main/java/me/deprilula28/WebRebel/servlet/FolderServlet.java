@@ -48,7 +48,7 @@ public class FolderServlet extends HttpServlet{
 				while(scann.hasNextLine()) stringBuilder.append(scann.nextLine());
 				scann.close();
 				
-				response.setStatus(HttpStatus.FOUND_302);
+				response.setStatus(HttpStatus.OK_200);
 				response.getWriter().append(stringBuilder.toString());
 			}else{
 				path = path.substring(7);
