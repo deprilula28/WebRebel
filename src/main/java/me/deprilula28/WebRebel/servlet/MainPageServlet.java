@@ -31,7 +31,6 @@ public class MainPageServlet extends HttpServlet{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
 
 		try{
-			
 			String split = request.getServletPath().substring(1).split("/")[0];
 			
 			if(split == "admin"){

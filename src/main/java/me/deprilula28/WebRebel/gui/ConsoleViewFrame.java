@@ -9,6 +9,7 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.HashMap;
@@ -70,6 +71,17 @@ public class ConsoleViewFrame extends JFrame implements TreeCellRenderer{
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+
+		addWindowListener(new WindowAdapter(){
+			
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent e){
+				
+				WebRebel.REBEL.getFrame().getConsoleViewButton().setText("Open Console View");
+				
+			};
+			
+		});
 		
 		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 300);

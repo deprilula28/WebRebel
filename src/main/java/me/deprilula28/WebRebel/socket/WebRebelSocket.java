@@ -26,6 +26,7 @@ import me.deprilula28.WebRebel.connection.Browser;
 import me.deprilula28.WebRebel.connection.OperatingSystem;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
 import me.deprilula28.WebRebel.gui.BrowserTreeNode;
+import me.deprilula28.WebRebel.gui.ClientFrame;
 import me.deprilula28.WebRebel.gui.ConnectionTreeNode;
 import me.deprilula28.WebRebel.gui.ConsoleViewFrame;
 import me.deprilula28.WebRebel.gui.OperatingSystemTreeNode;
@@ -42,12 +43,21 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	private long lastPing;
 	private int ping;
 	private boolean pending;
+	private boolean connected;
+	private ClientFrame frame;
+	private PongListener pong;
 	
 	public WebRebelSocket(WebRebelConnection connection){
 
 		executorService = Executors.newScheduledThreadPool(1);
 		this.connection = connection;
 		
+	}
+	
+	public boolean isConnected(){
+	
+		return connected;
+	
 	}
 	
 	public void sendAction(Action action){
@@ -87,6 +97,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		System.out.println("(" + connection.toString() + ") Disconnected");
 		WebRebel.REBEL.getConnections().remove(this);
 		reloadTree();
+		connected = false;
+		if(frame != null) frame.updateConnectionStatus(this);
 		
 	}
 
@@ -103,6 +115,8 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		sendAction(new Action(ActionType.SERVER_HANDSHAKE, UUID.randomUUID(), new JSON()));
 		
 		logs.put(connection, new ArrayList<>());
+		connected = true;
+		if(frame != null) frame.updateConnectionStatus(this);
 		
 	}
 
@@ -180,6 +194,12 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				reloadTree();
 				
 				sendAction(new Action(ActionType.SERVER_CLIENT_PING_INFO, UUID.randomUUID(), JSON.json("ping", ping)));
+				if(frame != null) frame.updateConnectionStatus(this);
+				
+				if(pong != null){
+					pong.pong();
+					pong = null;
+				}
 				break;
 			default:
 				throw new IOException("Invalid request type");
@@ -207,7 +227,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 		DefaultTreeModel model = new DefaultTreeModel(
 			new DefaultMutableTreeNode("root"){
 				{
-					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new ConnectionTreeNode(socket.getConnection(), socket.isPending(), socket.getPing()));
+					for(WebRebelSocket socket : WebRebel.REBEL.getConnections()) add(new ConnectionTreeNode(socket.getConnection(), socket, socket.isPending(), socket.getPing()));
 					if(WebRebel.REBEL.getConnections().size() == 0) add(new DefaultMutableTreeNode("No connections."));
 				}
 			}
@@ -273,6 +293,32 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 			lastPing = System.currentTimeMillis();
 			sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSON()));
 		}
+		
+	}
+	
+	public void ping(PongListener pong){
+		
+		this.pong = pong;
+		lastPing = System.currentTimeMillis();
+		sendAction(new Action(ActionType.SERVER_PING, UUID.randomUUID(), new JSON()));
+		
+	}
+	
+	public static interface PongListener{
+		
+		public void pong();
+		
+	}
+	
+	public void setFrame(ClientFrame frame){
+	
+		this.frame = frame;
+	
+	}
+	
+	public void disconnect(){
+		
+		session.close();
 		
 	}
 	

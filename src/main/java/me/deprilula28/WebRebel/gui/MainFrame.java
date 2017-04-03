@@ -6,8 +6,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
@@ -19,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -28,6 +31,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.json.JSON;
 
@@ -109,8 +114,23 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 			System.err.println("Failed to set WebRebel frame icon:");
 			e.printStackTrace();
 		}
+		
+		addWindowListener(new WindowAdapter(){
+			
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent){
 
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				Toolkit.getDefaultToolkit().beep();
+				int response = JOptionPane.showConfirmDialog(MainFrame.this, "All the connections will be left pending.", "Are you sure?", JOptionPane.YES_NO_OPTION,
+						JOptionPane.WARNING_MESSAGE);
+				
+				if(response == JOptionPane.YES_OPTION) System.exit(-1);
+				
+			}
+			
+		});
+
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 443);
 
 		contentPane = new JPanel();
@@ -252,6 +272,32 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 				}
 			}
 		));
+		clientsTree.addMouseListener(new MouseAdapter(){
+			
+			@Override
+			public void mousePressed(MouseEvent e){
+				
+				int selRow = clientsTree.getRowForLocation(e.getX(), e.getY());
+		        TreePath selPath = clientsTree.getPathForLocation(e.getX(), e.getY());
+		        if(selRow != -1 && e.getClickCount() == 2){
+		        	TreeNode node = (TreeNode) selPath.getLastPathComponent();
+		        	if(node instanceof ConnectionTreeNode){
+			        	try{
+							Image image = getImageForNode(node);
+							ClientFrame clientFrame = new ClientFrame(((ConnectionTreeNode) node).getSocket(), image);
+							clientFrame.setVisible(true);
+							((ConnectionTreeNode) node).getSocket().setFrame(clientFrame);
+							clientFrame.updateConnectionStatus(((ConnectionTreeNode) node).getSocket());
+						}catch(Exception e1){
+							System.err.println("Failed to open client panel");
+							e1.printStackTrace();
+						}
+		        	}
+		        }
+				
+			}
+			
+		});
 		treeCellRenderer = (DefaultTreeCellRenderer) clientsTree.getCellRenderer();
 		clientsTree.setCellRenderer(this);
 		clientsScrollPane.setViewportView(clientsTree);
@@ -293,6 +339,12 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		
 		setLocationRelativeTo(null);
 		
+	}
+	
+	public JButton getConsoleViewButton(){
+	
+		return consoleViewButton;
+	
 	}
 
 	public JTree getClientTree(){
@@ -336,6 +388,73 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		taskProgressBar.setValue(value);
 		
 	}
+	
+	public Image getImageForNode(TreeNode nodo) throws Exception{
+		
+		if(nodo instanceof ConnectionTreeNode){
+			ConnectionTreeNode connectionTreeNode = (ConnectionTreeNode) nodo;
+			BufferedImage bufferedImage = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+			Graphics2D drawing = bufferedImage.createGraphics();
+			
+			WebRebelConnection connection = connectionTreeNode.getConnection();
+			UseragentParser useragentParser = connection.getUserAgentParser();
+			
+			OperatingSystemType os = useragentParser.getOperatingSystem().getType();
+			if(os == null) drawing.drawImage(unknown, 0, 0, null);
+			else switch(os){
+			case ANDROID:
+				drawing.drawImage(android, 0, 0, null);
+				break;
+			case IOS:
+				drawing.drawImage(ios, 0, 0, null);
+				break;
+			case LINUX:
+				drawing.drawImage(linux, 0, 0, null);
+				break;
+			case OS_X:
+				drawing.drawImage(osx, 0, 0, null);
+				break;
+			case WINDOWS:
+				drawing.drawImage(windows, 0, 0, null);
+				break;
+			}
+			
+			BrowserType browser = useragentParser.getBrowser().getType();
+			if(browser != null) switch(browser){
+			case CHROME:
+				drawing.drawImage(chrome, 10, 10, null);
+				break;
+			case EDGE:
+				drawing.drawImage(edge, 10, 10, null);
+				break;
+			case FIREFOX:
+				drawing.drawImage(firefox, 10, 10, null);
+				break;
+			case IE:
+				drawing.drawImage(ie, 10, 10, null);
+				break;
+			case SAFARI:
+				drawing.drawImage(safari, 10, 10, null);
+				break;
+			}
+			
+			if(connectionTreeNode.isPending()) drawing.drawImage(pending, 10, 0, null);
+			else{
+				int ping = connectionTreeNode.getPing();
+
+				if(ping < 50) drawing.drawImage(fiveBar, 10, 0, null);
+				else if(ping < 100) drawing.drawImage(fourBar, 10, 0, null);
+				else if(ping < 400) drawing.drawImage(threeBar, 10, 0, null);
+				else if(ping < 999) drawing.drawImage(twoBar, 10, 0, null);
+				else drawing.drawImage(oneBar, 10, 0, null);
+			}
+			
+			return bufferedImage;
+		}else{
+			return noEntry;
+		}
+		
+	}
 
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus){
@@ -343,73 +462,10 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		DefaultMutableTreeNode nodo = (DefaultMutableTreeNode) value;
 		
 		try{
-			if(nodo instanceof ConnectionTreeNode){
-				ConnectionTreeNode connectionTreeNode = (ConnectionTreeNode) nodo;
-				BufferedImage bufferedImage = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D drawing = bufferedImage.createGraphics();
-				
-				WebRebelConnection connection = connectionTreeNode.getConnection();
-				UseragentParser useragentParser = connection.getUserAgentParser();
-				
-				OperatingSystemType os = useragentParser.getOperatingSystem().getType();
-				if(os == null) drawing.drawImage(unknown, 0, 0, null);
-				else switch(os){
-				case ANDROID:
-					drawing.drawImage(android, 0, 0, null);
-					break;
-				case IOS:
-					drawing.drawImage(ios, 0, 0, null);
-					break;
-				case LINUX:
-					drawing.drawImage(linux, 0, 0, null);
-					break;
-				case OS_X:
-					drawing.drawImage(osx, 0, 0, null);
-					break;
-				case WINDOWS:
-					drawing.drawImage(windows, 0, 0, null);
-					break;
-				}
-				
-				BrowserType browser = useragentParser.getBrowser().getType();
-				if(browser != null) switch(browser){
-				case CHROME:
-					drawing.drawImage(chrome, 10, 10, null);
-					break;
-				case EDGE:
-					drawing.drawImage(edge, 10, 10, null);
-					break;
-				case FIREFOX:
-					drawing.drawImage(firefox, 10, 10, null);
-					break;
-				case IE:
-					drawing.drawImage(ie, 10, 10, null);
-					break;
-				case SAFARI:
-					drawing.drawImage(safari, 10, 10, null);
-					break;
-				}
-				
-				if(connectionTreeNode.isPending()) drawing.drawImage(pending, 10, 0, null);
-				else{
-					int ping = connectionTreeNode.getPing();
-
-					if(ping < 50) drawing.drawImage(fiveBar, 10, 0, null);
-					else if(ping < 100) drawing.drawImage(fourBar, 10, 0, null);
-					else if(ping < 400) drawing.drawImage(threeBar, 10, 0, null);
-					else if(ping < 999) drawing.drawImage(twoBar, 10, 0, null);
-					else drawing.drawImage(oneBar, 10, 0, null);
-				}
-				
-				ImageIcon icon = new ImageIcon(bufferedImage);
-				treeCellRenderer.setClosedIcon(icon);
-				treeCellRenderer.setOpenIcon(icon);
-				treeCellRenderer.setLeafIcon(icon);
-			}else{
-				treeCellRenderer.setClosedIcon(new ImageIcon(noEntry));
-				treeCellRenderer.setOpenIcon(new ImageIcon(noEntry));
-				treeCellRenderer.setLeafIcon(new ImageIcon(noEntry));
-			}
+			ImageIcon icon = new ImageIcon(getImageForNode(nodo));
+			treeCellRenderer.setClosedIcon(icon);
+			treeCellRenderer.setOpenIcon(icon);
+			treeCellRenderer.setLeafIcon(icon);
 		}catch(Exception e){
 			System.err.println("Error setting JTree Node Image:");
 			e.printStackTrace();
