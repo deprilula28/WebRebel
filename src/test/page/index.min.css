@@ -1,0 +1,1 @@
+*{margin:0;padding:0}.background{position:relative;left:0px;top:0px;width:100vw;height:100vh;animation:move 10s ease infinite;background-color:#a1a1a1}.background p{font-size:5em;color:white;box-sizing:border-box;text-align:center;position:relative;top:35vh}@keyframes move{0%,100%{background-position:90% 10%}50%{background-position:10%, 90%}}

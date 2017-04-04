@@ -1,0 +1,138 @@
+*
+    border: 0
+    padding: 0
+    margin-top: 0px
+    margin-right: 0px
+    margin-bottom: 0px
+    margin-left: 0px
+    -webkit-transform: translate3d(0,0,0)
+    opacity: 1
+
+iframe
+    width: 100vw
+    height: 100vh
+    border: 0
+    padding: 0
+    position: fixed
+    top: 0
+    left: 0
+    opacity: 0
+
+html, body
+    height: 100vh
+    width: 100vw
+
+.bottomBarWrapper
+    display: block
+    position: fixed
+    overflow: 
+    left: 0px
+    height: 30px
+    width: 100vw
+    bottom: 0px
+    z-index: 99
+    opacity: 0.75
+
+    &:nth-child(1)
+      margin-left: 40px !important
+
+.mainImg
+   position: fixed
+   font-size: 5em
+   margin-left: 0px !important
+
+   p:not(.nomargin)
+     margin-left: -20px !important
+   &:nth-child(1)
+     margin-left: 0px !important
+
+
+.paragraph
+   position: fixed
+
+p:not(.paragraph):not(.ping)
+   font-family: Consolas,monaco,monospace
+   margin-top: 8px !important
+   margin-left: -4px
+   margin-right: 0px
+   margin-bottom: 5px
+   padding: 0
+   color: white
+   display: inline
+   cursor: pointer
+
+.ping
+  position: relative
+  top: -48px
+  left: 128px
+  color: #29db61
+  
+.leftFakeSyntaxHighlight:not(.nomargin)
+  margin-left: 18px !important
+
+.nomargin
+  margin-left: 0px !important
+
+.bottomBarWrapper
+    opacity: 0
+
+.cellularSignalIcon
+  width: 0px
+  height: 0px
+  border: 8px
+  margin-right: 0
+  overflow: hidden
+  border-style: solid
+  border-color: rgba(0,0,0,0) #bababa #bababa rgba(0,0,0,0)
+  
+.cellularSignalIcon:not(.green)
+  position: relative
+  top: -16px
+  left: 120px
+
+.greenIconMaster
+  position: relative
+  top: -32px
+  left: 120px
+  overflow: hidden
+  width: 16px
+  height: 16px
+  
+.green
+  border-color: rgba(0,0,0,0) #29db61 #29db61 rgba(0,0,0,0)
+  
+.progress
+  background-color: green
+  width: 16px
+  height: 16px
+
+.webRebelInformationBox
+  display: none
+  width: 450px
+  height: 300px
+  z-index: 5
+  position: fixed
+  bottom: 30px
+  opacity: 1
+
+.webRebelInfoBoxPopup
+  animation: infoBoxPopup 0.5s ease
+
+.webRebelInfoBoxPopdown
+  animation: infoBoxPopdown 0.5s ease
+
+@keyframes infoBoxPopdown
+  0%
+    transform: translate(0px, 0px)
+    opacity: 1
+  100%
+    transform: translate(0px, 250px)
+    opacity: 0
+
+@keyframes infoBoxPopup
+  0%
+    transform: translate(0px, 250px)
+    opacity: 0
+  100%
+    transform: translate(0px, 0px)
+    opacity: 1
