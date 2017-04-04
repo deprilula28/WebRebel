@@ -69,7 +69,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void sendResponse(JSON json){
 		
 		try{
-			remoteEndpoint.sendString(json.toString());
+			remoteEndpoint.sendStringByFuture(json.toString());
 		}catch(Exception e){
 			System.err.println("Failed to write response");
 			e.printStackTrace();

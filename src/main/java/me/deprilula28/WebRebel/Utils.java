@@ -8,7 +8,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class Utils{
-
+	
+	public static String createIndentation(int amount){
+		
+		StringBuilder builder = new StringBuilder();
+		for(int i = 0; i < amount; i ++) builder.append(" ");
+		
+		return builder.toString();
+		
+	}
+	
 	public static <K, V> List<Entry<K, V>> sortKeys(Map<K, V> origin, Comparator<K> comparator){
 		
 		List<Entry<K, V>> keys = new ArrayList<>();

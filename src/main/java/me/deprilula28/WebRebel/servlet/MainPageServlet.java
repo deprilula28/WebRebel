@@ -24,7 +24,8 @@ public class MainPageServlet extends HttpServlet{
 		"mstile-310x150.png", "mstile-310x310.png", "safari-pinned-tab.svg"
 	});
 	private static final List<String> FILEPATH_REQUESTABLE = Arrays.asList(new String[]{
-		"webRebel.js", "jQuery.js", "webRebel.min.css", "webRebel.css"
+		"webRebel.js", "jQuery.js", "webRebel.min.css", "webRebel.css", "actions.js", "backgroundRandomizer.js", "dynamicCodeUpdator.js", "elementMutator.js", "handlers.js",
+		"http.js"
 	});
 	
 	@Override
