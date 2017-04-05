@@ -176,6 +176,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				logs.get(connection).add(logInstance);
 				WebRebel.REBEL.getFrame().getConsoleViewFrame().addMessage(connection, logInstance);
 				System.out.println("(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + logInstance.toString());
+				if(frame != null) frame.add(logInstance);
 				break;
 			case CLIENT_HANDSHAKE:
 				if(shakedHands) throw new IOException("Already handshaked!");

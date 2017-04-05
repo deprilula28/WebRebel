@@ -284,7 +284,7 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		        	if(node instanceof ConnectionTreeNode){
 			        	try{
 							Image image = getImageForNode(node);
-							ClientFrame clientFrame = new ClientFrame(((ConnectionTreeNode) node).getSocket(), image);
+							ClientFrame clientFrame = new ClientFrame(((ConnectionTreeNode) node).getSocket(), image, MainFrame.this);
 							clientFrame.setVisible(true);
 							((ConnectionTreeNode) node).getSocket().setFrame(clientFrame);
 							clientFrame.updateConnectionStatus(((ConnectionTreeNode) node).getSocket());

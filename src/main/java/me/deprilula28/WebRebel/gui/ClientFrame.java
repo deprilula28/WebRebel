@@ -1,11 +1,14 @@
 package me.deprilula28.WebRebel.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
+import java.util.Collections;
+import java.util.List;
 import java.util.TimerTask;
 import java.util.UUID;
 
@@ -16,12 +19,16 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
 
 import org.json.JSON;
 
 import me.deprilula28.WebRebel.ActionType;
 import me.deprilula28.WebRebel.connection.Action;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
+import me.deprilula28.WebRebel.socket.ConsoleLog;
 import me.deprilula28.WebRebel.socket.WebRebelSocket;
 
 public class ClientFrame extends JFrame{
@@ -29,13 +36,16 @@ public class ClientFrame extends JFrame{
 	private JPanel contentPane;
 	private JLabel connectionStatusLabel;
 	private JButton disconnectButton;
+	private JTextPane consoleLogsTextPane;
+	private Style style;
 
-	public ClientFrame(WebRebelSocket socket, Image img){
+	public ClientFrame(WebRebelSocket socket, Image img, JFrame frame){
 		
 		WebRebelConnection connection = socket.getConnection();
 		setTitle("Client [" + connection + "]");
 		setIconImage(img);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 682, 406);
+		setLocationRelativeTo(frame);
 
 		addWindowListener(new WindowAdapter(){
 			
@@ -96,7 +106,7 @@ public class ClientFrame extends JFrame{
 		JScrollPane consoleLogsScrollPane = new JScrollPane();
 		consoleLogsDivision.add(consoleLogsScrollPane, BorderLayout.CENTER);
 		
-		JTextPane consoleLogsTextPane = new JTextPane();
+		consoleLogsTextPane = new JTextPane();
 		consoleLogsTextPane.setEditable(false);
 		consoleLogsScrollPane.setViewportView(consoleLogsTextPane);
 		
@@ -113,13 +123,13 @@ public class ClientFrame extends JFrame{
 		gbl_panel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
-		JLabel lblDom = new JLabel("DOM:");
-		GridBagConstraints gbc_lblDom = new GridBagConstraints();
-		gbc_lblDom.insets = new Insets(0, 0, 5, 0);
-		gbc_lblDom.fill = GridBagConstraints.HORIZONTAL;
-		gbc_lblDom.gridx = 0;
-		gbc_lblDom.gridy = 0;
-		panel.add(lblDom, gbc_lblDom);
+		JLabel domLabel = new JLabel("DOM:");
+		GridBagConstraints gbc_domLabel = new GridBagConstraints();
+		gbc_domLabel.insets = new Insets(0, 0, 5, 0);
+		gbc_domLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_domLabel.gridx = 0;
+		gbc_domLabel.gridy = 0;
+		panel.add(domLabel, gbc_domLabel);
 		
 		JPanel actionsPanel = new JPanel();
 		GridBagConstraints gbc_actionsPanel = new GridBagConstraints();
@@ -164,6 +174,29 @@ public class ClientFrame extends JFrame{
 		reloadRequestButton.addActionListener((e) -> {
 			socket.sendAction(new Action(ActionType.SERVER_REQUEST_FULL_RELOAD, UUID.randomUUID(), new JSON()));
 		});
+
+		style = consoleLogsTextPane.addStyle("Connection Style", null);
+		StyleConstants.setForeground(style, Color.black);
+		
+		List<ConsoleLog> logs = WebRebelSocket.logs.get(socket.getConnection());
+		Collections.sort(logs, (o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()));
+		
+		for(ConsoleLog cur : logs)
+			try{
+				consoleLogsTextPane.getDocument().insertString(consoleLogsTextPane.getDocument().getLength(), cur.toString() + "\n", style);
+			}catch(BadLocationException e1){
+				e1.printStackTrace();
+			}
+		
+	}
+		
+	public void add(ConsoleLog log){
+
+		try{
+			consoleLogsTextPane.getDocument().insertString(consoleLogsTextPane.getDocument().getLength(), log.toString() + "\n", style);
+		}catch(BadLocationException e){
+			e.printStackTrace();
+		}		
 		
 	}
 	
