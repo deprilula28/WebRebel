@@ -30,6 +30,9 @@ import me.deprilula28.WebRebel.connection.Action;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
 import me.deprilula28.WebRebel.socket.ConsoleLog;
 import me.deprilula28.WebRebel.socket.WebRebelSocket;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public class ClientFrame extends JFrame{
 
@@ -120,7 +123,7 @@ public class ClientFrame extends JFrame{
 		gbl_panel.columnWidths = new int[]{0, 0};
 		gbl_panel.rowHeights = new int[]{0, 0, 0};
 		gbl_panel.columnWeights = new double[]{1.0, Double.MIN_VALUE};
-		gbl_panel.rowWeights = new double[]{0.0, 0.0, Double.MIN_VALUE};
+		gbl_panel.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		panel.setLayout(gbl_panel);
 		
 		JLabel domLabel = new JLabel("DOM:");
@@ -130,6 +133,24 @@ public class ClientFrame extends JFrame{
 		gbc_domLabel.gridx = 0;
 		gbc_domLabel.gridy = 0;
 		panel.add(domLabel, gbc_domLabel);
+		
+		JScrollPane domScrollPane = new JScrollPane();
+		GridBagConstraints gbc_domScrollPane = new GridBagConstraints();
+		gbc_domScrollPane.fill = GridBagConstraints.BOTH;
+		gbc_domScrollPane.gridx = 0;
+		gbc_domScrollPane.gridy = 1;
+		panel.add(domScrollPane, gbc_domScrollPane);
+		
+		JTree domTree = new JTree();
+		domTree.setRootVisible(false);
+		domTree.setModel(new DefaultTreeModel(
+			new DefaultMutableTreeNode("root") {
+				{
+					add(new DefaultMutableTreeNode("Loading"));
+				}
+			}
+		));
+		domScrollPane.setViewportView(domTree);
 		
 		JPanel actionsPanel = new JPanel();
 		GridBagConstraints gbc_actionsPanel = new GridBagConstraints();
