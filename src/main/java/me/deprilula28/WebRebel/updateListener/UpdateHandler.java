@@ -52,7 +52,17 @@ public class UpdateHandler{
 		json.put("source", relativePath);
 		
 		JSONArray lines = new JSONArray();
-		for(String cur : newLines) lines.put(cur);
+		
+		boolean body = false;
+		for(String cur : newLines){
+			if(cur.contains("<body>")){
+				body = true;
+				cur = cur.replaceFirst("<body>", "");
+			}else if(cur.contains("</body>")) body = false;
+			
+			if(body) lines.put(cur);
+		}
+		
 		json.put("lines", lines);
 		
 		/*

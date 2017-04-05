@@ -2,6 +2,7 @@ package me.deprilula28.WebRebel;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
@@ -42,6 +43,35 @@ public class WebRebel{
 		System.out.println("<> with <3 by deprilula28");
 		System.out.println("-====-");
 		System.out.println();
+		
+		try{
+			Scanner scanner = new Scanner(new File("lib" + File.separatorChar + "save.json"));
+			StringBuilder stringBuilder = new StringBuilder();
+			
+			while(scanner.hasNextLine()) stringBuilder.append(scanner.nextLine());
+			scanner.close();
+			
+			JSON json = JSON.parse(stringBuilder.toString());
+			
+			boolean firstRun = json.getBoolean("firstRun");
+			
+			if(firstRun){
+				JOptionPane.showConfirmDialog(null, "Click the folder label to choose the working folder!", "Welcome to WebRebel!", JOptionPane.OK_OPTION,
+						JOptionPane.INFORMATION_MESSAGE);
+				
+				json.put("firstRun", false);
+			}
+			
+			File file = new File("lib" + File.separatorChar + "save.json");
+			file.delete();
+			file.createNewFile();
+			
+			FileWriter fw = new FileWriter(file);
+			fw.write(json.toString());
+			fw.close();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		
 		try{
 			Log.setLog(new LogRuleset());
