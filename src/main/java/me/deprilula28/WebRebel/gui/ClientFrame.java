@@ -41,6 +41,7 @@ public class ClientFrame extends JFrame{
 	private JButton disconnectButton;
 	private JTextPane consoleLogsTextPane;
 	private Style style;
+	private DOMExplorer domExplorer;
 
 	public ClientFrame(WebRebelSocket socket, Image img, JFrame frame){
 		
@@ -52,14 +53,14 @@ public class ClientFrame extends JFrame{
 
 		addWindowListener(new WindowAdapter(){
 			
-			@Override
-			public void windowClosing(java.awt.event.WindowEvent e){
-				
-				socket.setFrame(null);
-				
-			};
-			
-		});
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e){
+
+                    socket.setFrame(null);
+
+                };
+
+        });
 		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -209,6 +210,14 @@ public class ClientFrame extends JFrame{
 				e1.printStackTrace();
 			}
 		
+		domExplorer = new DOMExplorer(socket);
+		
+	}
+	
+	public DOMExplorer getDOMExplorer(){
+	
+		return domExplorer;
+	
 	}
 		
 	public void add(ConsoleLog log){

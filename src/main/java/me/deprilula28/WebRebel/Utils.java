@@ -18,7 +18,7 @@ public class Utils{
 		
 	}
 	
-	public static <K, V> List<Entry<K, V>> sortKeys(Map<K, V> origin, Comparator<K> comparator){
+	public static <K, V> List<Entry<K, V>> sortByKeys(Map<K, V> origin, Comparator<K> comparator){
 		
 		List<Entry<K, V>> keys = new ArrayList<>();
 		keys.addAll(origin.entrySet());
@@ -31,7 +31,7 @@ public class Utils{
 		
 	}
 
-	public static <K, V> List<Entry<K, V>> sortValues(Map<K, V> origin, Comparator<V> comparator){
+	public static <K, V> List<Entry<K, V>> sortByValues(Map<K, V> origin, Comparator<V> comparator){
 		
 		List<Entry<K, V>> keys = new ArrayList<>();
 		keys.addAll(origin.entrySet());

@@ -30,7 +30,8 @@ public class WebRebel{
 	public static WebRebel REBEL;
 	private MainFrame frame;
 	private List<WebRebelSocket> connections;
-	
+
+	public void run(){}
 	public static void main(String[] args){
 		
 		try{
