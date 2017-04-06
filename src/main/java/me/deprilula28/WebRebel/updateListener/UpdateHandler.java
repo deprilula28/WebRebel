@@ -53,15 +53,17 @@ public class UpdateHandler{
 		
 		JSONArray lines = new JSONArray();
 		
-		boolean body = false;
-		for(String cur : newLines){
-			if(cur.contains("<body>")){
-				body = true;
-				cur = cur.replaceFirst("<body>", "");
-			}else if(cur.contains("</body>")) body = false;
-			
-			if(body) lines.put(cur);
-		}
+		if(extension.equals("html")){
+			boolean body = false;
+			for(String cur : newLines){
+				if(cur.contains("<body>")){
+					body = true;
+					cur = cur.replaceFirst("<body>", "");
+				}else if(cur.contains("</body>")) body = false;
+				
+				if(body) lines.put(cur);
+			}
+		}else for(String cur : newLines) lines.put(cur);
 		
 		json.put("lines", lines);
 		
@@ -96,7 +98,10 @@ public class UpdateHandler{
 		List<String> lines = new ArrayList<>();
 		Scanner scanner = new Scanner(file);
 		
-		while(scanner.hasNextLine()) lines.add(scanner.nextLine());
+		while(scanner.hasNextLine()){
+			String scannerLine = scanner.nextLine();
+			lines.add(scannerLine);
+		}
 		scanner.close();
 		
 		return lines;

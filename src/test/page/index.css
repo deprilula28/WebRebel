@@ -10,7 +10,7 @@
   width: 100vw;
   height: 100vh;
   animation: move 10s ease infinite;
-  background-color: #a1a1a1;
+  background-color: #ddd;
 }
 
 .background p {

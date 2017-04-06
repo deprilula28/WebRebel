@@ -333,6 +333,7 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		
 		consoleViewFrame = new ConsoleViewFrame();
 		consoleViewButton.addActionListener((event) -> {
+			consoleViewFrame.setLocationRelativeTo(MainFrame.this);
 			consoleViewFrame.setVisible(!consoleViewFrame.isVisible());
 			consoleViewButton.setText(consoleViewFrame.isVisible() ? "Hide Console View" : "Open Console View");
 		});
