@@ -27,6 +27,7 @@ public class DOMExplorer{
     private Map<UUID, DOMElement> pendingRequests;
     private ClientFrame frame;
     private Map<UUID, DOMElement> elementIDs;
+    @Getter  private Map<DefaultMutableTreeNode, DOMElement> elementNodes;
 	
 	public DOMExplorer(WebRebelSocket socket, ClientFrame frame){
 		
@@ -36,6 +37,7 @@ public class DOMExplorer{
 		
 		pendingRequests = new HashMap<>();
         elementIDs = new HashMap<>();
+        elementNodes = new HashMap<>();
 		
 		exploreMain();
 		
@@ -80,7 +82,7 @@ public class DOMExplorer{
 			//Any other element
 			expand.setChildren(parseChildren(json, elementIDs.get(UUID.fromString(expand.getPath().get(expand.getPath().size() - 1))).getTreeNode()));
 		}
-		
+
 	}
 	
 	private List<DOMElement> parseChildren(JSON json, DefaultMutableTreeNode masterNode){
@@ -100,6 +102,7 @@ public class DOMExplorer{
             
             DOMElement element = new DOMElement(elType, type, attributes, hasChildren, paths, newNode);
             elements.add(element);
+            elementNodes.put(newNode, element);
             elementIDs.put(UUID.fromString(curj.getString("id")), element);
         }
 		

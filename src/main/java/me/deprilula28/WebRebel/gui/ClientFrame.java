@@ -167,7 +167,7 @@ public class ClientFrame extends JFrame{
 
                 TreePath selPath = e.getPath();
                 TreeNode node = (TreeNode) selPath.getLastPathComponent();
-
+                domExplorer.domExpand(domExplorer.getElementNodes().get(node));
 
             }
 
