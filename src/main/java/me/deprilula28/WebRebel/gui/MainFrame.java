@@ -45,31 +45,25 @@ import me.deprilula28.WebRebel.connection.WebRebelConnection;
 import me.deprilula28.WebRebel.updateListener.FolderWatcher;
 
 public class MainFrame extends JFrame implements TreeCellRenderer{
-	
-	public ConsoleViewFrame consoleViewFrame;
+
 	public FolderWatcher watcher;
 	public File folder;
-	private JPanel contentPane;
 	private JLabel taskLabel;
 	private JProgressBar taskProgressBar;
-	private JLabel folderSelectedTitleLabel;
 	private JLabel folderSelectedLabel;
-	private JLabel clientsTitleLabel;
-	private JScrollPane clientsScrollPane;
 	private JTree clientsTree;
-	private JPanel buttonsPanel;
 	private JButton consoleViewButton;
-	private JButton refreshPageEverywhereButton;
 	private DefaultTreeCellRenderer treeCellRenderer;
+    private ConsoleViewFrame consoleViewFrame;
 	
 	private Image noEntry;
-	
-	public Image unknown;
-	public Image osx;
-	public Image windows;
-	public Image linux;
-	public Image android;
-	public Image ios;
+
+    public Image unknown;
+    public Image osx;
+    public Image windows;
+    public Image linux;
+    public Image android;
+    public Image ios;
 	
 	private Image chrome;
 	private Image firefox;
@@ -133,7 +127,7 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 443);
 
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
@@ -144,7 +138,7 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		gbl_contentPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0d, 0d, 0.0, 0.0, 1d, 0.0, 0d};
 		contentPane.setLayout(gbl_contentPane);
 		
-		folderSelectedTitleLabel = new JLabel("Selected Folder:");
+		JLabel folderSelectedTitleLabel = new JLabel("Selected Folder:");
 		GridBagConstraints gbc_folderSelectedTitleLabel = new GridBagConstraints();
 		gbc_folderSelectedTitleLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_folderSelectedTitleLabel.insets = new Insets(0, 0, 5, 5);
@@ -247,15 +241,15 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		gbc_taskProgressBar.gridy = 4;
 		contentPane.add(taskProgressBar, gbc_taskProgressBar);
 		
-		clientsTitleLabel = new JLabel("Clients:");
+		JLabel clientsTitleLabel = new JLabel("Clients:");
 		GridBagConstraints gbc_clientsTitleLabel = new GridBagConstraints();
 		gbc_clientsTitleLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_clientsTitleLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_clientsTitleLabel.gridx = 1;
 		gbc_clientsTitleLabel.gridy = 6;
 		contentPane.add(clientsTitleLabel, gbc_clientsTitleLabel);
-		
-		clientsScrollPane = new JScrollPane();
+
+        JScrollPane clientsScrollPane = new JScrollPane();
 		GridBagConstraints gbc_clientsScrollPane = new GridBagConstraints();
 		gbc_clientsScrollPane.insets = new Insets(0, 0, 5, 5);
 		gbc_clientsScrollPane.fill = GridBagConstraints.BOTH;
@@ -301,8 +295,8 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		treeCellRenderer = (DefaultTreeCellRenderer) clientsTree.getCellRenderer();
 		clientsTree.setCellRenderer(this);
 		clientsScrollPane.setViewportView(clientsTree);
-		
-		buttonsPanel = new JPanel();
+
+        JPanel buttonsPanel = new JPanel();
 		GridBagConstraints gbc_buttonsPanel = new GridBagConstraints();
 		gbc_buttonsPanel.insets = new Insets(0, 0, 0, 5);
 		gbc_buttonsPanel.fill = GridBagConstraints.BOTH;
@@ -323,8 +317,8 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 		gbc_consoleViewButton.gridx = 0;
 		gbc_consoleViewButton.gridy = 0;
 		buttonsPanel.add(consoleViewButton, gbc_consoleViewButton);
-		
-		refreshPageEverywhereButton = new JButton("Refresh Everywhere");
+
+        JButton refreshPageEverywhereButton = new JButton("Refresh Everywhere");
 		GridBagConstraints gbc_refreshPageEverywhereButton = new GridBagConstraints();
 		gbc_refreshPageEverywhereButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_refreshPageEverywhereButton.gridx = 1;

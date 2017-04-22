@@ -19,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
@@ -28,11 +30,14 @@ import org.json.JSON;
 import me.deprilula28.WebRebel.ActionType;
 import me.deprilula28.WebRebel.connection.Action;
 import me.deprilula28.WebRebel.connection.WebRebelConnection;
+import me.deprilula28.WebRebel.gui.dom.DOMExplorer;
 import me.deprilula28.WebRebel.socket.ConsoleLog;
 import me.deprilula28.WebRebel.socket.WebRebelSocket;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 public class ClientFrame extends JFrame{
 
@@ -42,6 +47,9 @@ public class ClientFrame extends JFrame{
 	private JTextPane consoleLogsTextPane;
 	private Style style;
 	private DOMExplorer domExplorer;
+	private JTree domTree;
+	private DefaultMutableTreeNode rootNode;
+	private DefaultMutableTreeNode loadingNode;
 
 	public ClientFrame(WebRebelSocket socket, Image img, JFrame frame){
 		
@@ -142,15 +150,29 @@ public class ClientFrame extends JFrame{
 		gbc_domScrollPane.gridy = 1;
 		panel.add(domScrollPane, gbc_domScrollPane);
 		
-		JTree domTree = new JTree();
+		domTree = new JTree();
 		domTree.setRootVisible(false);
 		domTree.setModel(new DefaultTreeModel(
-			new DefaultMutableTreeNode("root") {
+			rootNode = new DefaultMutableTreeNode("root"){
 				{
-					add(new DefaultMutableTreeNode("Loading"));
+					add(loadingNode = new DefaultMutableTreeNode("Loading"));
 				}
 			}
 		));
+
+		domTree.addTreeExpansionListener(new TreeExpansionListener(){
+
+            @Override
+            public void treeExpanded(TreeExpansionEvent e){
+
+                TreePath selPath = e.getPath();
+                TreeNode node = (TreeNode) selPath.getLastPathComponent();
+
+
+            }
+
+            @Override public void treeCollapsed(TreeExpansionEvent event){}
+        });
 		domScrollPane.setViewportView(domTree);
 		
 		JPanel actionsPanel = new JPanel();
@@ -210,8 +232,32 @@ public class ClientFrame extends JFrame{
 				e1.printStackTrace();
 			}
 		
-		domExplorer = new DOMExplorer(socket);
+		domExplorer = new DOMExplorer(socket, this);
 		
+	}
+	
+	public DefaultMutableTreeNode getRootNode(){
+	
+		return rootNode;
+	
+	}
+	
+	public DefaultMutableTreeNode getLoadingNode(){
+	
+		return loadingNode;
+	
+	}
+	
+	public void unloadLoadingNode(){
+		
+		loadingNode = null;
+	
+	}
+	
+	public JTree getDomTree(){
+	
+		return domTree;
+	
 	}
 	
 	public DOMExplorer getDOMExplorer(){

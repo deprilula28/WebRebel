@@ -221,9 +221,7 @@ public class ConsoleViewFrame extends JFrame implements TreeCellRenderer{
 		
 		textPane.setText("");
 		
-		for(Entry<ConsoleLog, WebRebelConnection> cur : Utils.sortByKeys(usableLogs, (o1, o2) -> {
-			return (int) (o1.getTimestamp() - o2.getTimestamp());
-		})){
+		for(Entry<ConsoleLog, WebRebelConnection> cur : Utils.sortByKeys(usableLogs, (o1, o2) -> (int) (o1.getTimestamp() - o2.getTimestamp()))){
 			try{
 				styledDocument.insertString(styledDocument.getLength(), cur.getKey().toString() + "\n", connStyles.get(cur.getValue()));
 			}catch(BadLocationException e){

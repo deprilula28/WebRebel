@@ -1,29 +1,15 @@
 package me.deprilula28.WebRebel.connection;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class OperatingSystem{
 
 	private OperatingSystemType type;
 	private String version;
-	
-	public OperatingSystem(OperatingSystemType type, String version){
-		
-		this.type = type;
-		this.version = version;
-		
-	}
 
-	public OperatingSystemType getType(){
-		
-		return type;
-		
-	}
-
-	public String getVersion(){
-		
-		return version;
-		
-	}
-	
 	@Override
 	public boolean equals(Object obj){
 		

@@ -1,15 +1,29 @@
 package org.json;
 
-import me.deprilula28.WebRebel.Utils;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.Scanner;
+import java.util.Set;
+
+import me.deprilula28.WebRebel.Utils;
 
 /*
  Copyright (c) 2002 JSON.org
@@ -1067,6 +1081,22 @@ public class JSON{
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> List<T> getListJSONArray(String key, Class<T> t){
+
+	    JSONArray json = getJSONArray(key);
+
+	    List<T> list = new ArrayList<>();
+	    for(Object cur : json.myArrayList){
+	        if(cur.getClass().equals(t)){
+	        	list.add((T) cur);
+            }
+        }
+
+	    return list;
+
+	}
+	
 	@SuppressWarnings("unchecked")
 	public <V> Map<String, V> getMapJSONObject(String key, Class<V> v){
 

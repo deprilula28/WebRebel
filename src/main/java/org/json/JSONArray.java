@@ -1,5 +1,8 @@
 package org.json;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+
 /*
  Copyright (c) 2002 JSON.org
 
@@ -31,10 +34,12 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * A JSONArray is an ordered sequence of values. Its external text form is a
@@ -81,6 +86,40 @@ import java.util.Map;
  * @version 2016-05-20
  */
 public class JSONArray implements Iterable<Object> {
+
+	public static <T> JSONArray parse(List<T> list){
+
+		JSONArray json = new JSONArray();
+		json.myArrayList.addAll(list);
+
+		return json;
+
+	}
+
+	public static JSONArray parse(String string){
+
+		return new JSONArray(string);
+
+	}
+
+	public static JSONArray parse(File file) throws FileNotFoundException{
+
+		Scanner scann = new Scanner(file);
+		StringBuilder stringBuilder = new StringBuilder();
+
+		while(scann.hasNextLine())
+			stringBuilder.append(scann.nextLine());
+		scann.close();
+
+		return parse(stringBuilder.toString());
+
+	}
+
+	public static JSONArray json(Object... from){
+
+		return parse(Arrays.asList(from));
+
+	}
 
     /**
      * The arrayList where the JSONArray's properties are kept.

@@ -2,8 +2,10 @@ package me.deprilula28.WebRebel.gui;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import lombok.Data;
 import me.deprilula28.WebRebel.connection.Browser;
 
+@Data
 public class BrowserTreeNode extends DefaultMutableTreeNode{
 	
 	private Browser browser;
@@ -15,11 +17,5 @@ public class BrowserTreeNode extends DefaultMutableTreeNode{
 		this.browser = browser;
 		
 	}
-	
-	public Browser getBrowser(){
-	
-		return browser;
-	
-	}
-	
+
 }

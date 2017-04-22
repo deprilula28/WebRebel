@@ -1,11 +1,12 @@
 package me.deprilula28.WebRebel.connection;
 
+import lombok.Getter;
 
 public class UseragentParser{
-	
-	private String userAgentSource;
-	private OperatingSystem operatingSystem;
-	private Browser browser;
+
+    @Getter private String userAgentSource;
+	@Getter private OperatingSystem operatingSystem;
+	@Getter private Browser browser;
 	
 	public UseragentParser(String userAgentSource){
 		
@@ -120,23 +121,5 @@ public class UseragentParser{
 		return "(Unknown major version)";
 		
 	}
-	
-	public String getUserAgentSource(){
-	
-		return userAgentSource;
-	
-	}
-	
-	public OperatingSystem getOperatingSystem(){
-		
-		return operatingSystem;
-		
-	}
-	
-	public Browser getBrowser(){
-		
-		return browser;
-		
-	}
-	
+
 }

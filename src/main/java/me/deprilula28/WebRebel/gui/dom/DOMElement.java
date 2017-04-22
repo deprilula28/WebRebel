@@ -1,8 +1,13 @@
 package me.deprilula28.WebRebel.gui.dom;
 
+import lombok.Data;
+
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
+@Data
 public class DOMElement{
 	
 	private DOMElementType typeEnum;
@@ -11,57 +16,18 @@ public class DOMElement{
 	private boolean hasChildren;
 	private boolean childrenKnown;
 	private List<DOMElement> children;
+	private List<String> path;
+	private DefaultMutableTreeNode treeNode;
 
-	public DOMElement(DOMElementType typeEnum, String typeName, Map<String, String> attributes, boolean hasChildren){
-		
+	public DOMElement(DOMElementType typeEnum, String typeName, Map<String, String> attributes, boolean hasChildren, List<String> path, DefaultMutableTreeNode treeNode){
+
 		this.typeEnum = typeEnum;
 		this.typeName = typeName;
 		this.attributes = attributes;
 		this.hasChildren = hasChildren;
-		
-	}
+		this.path = path;
+		this.treeNode = treeNode;
 
-	public boolean isChildrenKnown(){
-		
-		return childrenKnown;
-		
-	}
-	
-	public List<DOMElement> getChildren(){
-		
-		return children;
-		
-	}
-	
-	public void setChildren(List<DOMElement> children){
-	
-		childrenKnown = true;
-		this.children = children;
-	
-	}
-	
-	public DOMElementType getTypeEnum(){
-	
-		return typeEnum;
-	
-	}
-
-	public String getTypeName(){
-	
-		return typeName;
-	
-	}
-
-	public Map<String, String> getAttributes(){
-	
-		return attributes;
-	
-	}
-
-	public boolean hasChildren(){
-		
-		return hasChildren;
-		
 	}
 
 }

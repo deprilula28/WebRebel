@@ -62,7 +62,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	
 	public void sendAction(Action action){
 		
-		sendResponse(new JSON().put("action", action.getActionType().toString()).put("id", action.getUUID().toString()).put("info", action.getJSONData()));
+		sendResponse(new JSON().put("action", action.getActionType().toString()).put("id", action.getUuid().toString()).put("info", action.getJsonData()));
 		
 	}
 	
@@ -172,7 +172,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 					stackTrace = new ArrayList<>();
 					for(Object cur : info.getJSONArray("stackTrace").myArrayList) stackTrace.add((String) cur);
 				}
-				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace);
+				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace, System.currentTimeMillis());
 				logs.get(connection).add(logInstance);
 				WebRebel.REBEL.getFrame().getConsoleViewFrame().addMessage(connection, logInstance);
 				System.out.println("(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + logInstance.toString());
@@ -201,6 +201,9 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 					pong.pong();
 					pong = null;
 				}
+				break;
+			case CLIENT_DOM_RESPONSE:
+				if(frame != null) frame.getDOMExplorer().handleDOMActionResponse(UUID.fromString(json.getString("id")), json.getJSONObject("info"));
 				break;
 			default:
 				throw new IOException("Invalid request type");

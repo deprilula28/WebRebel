@@ -1,68 +1,39 @@
 package me.deprilula28.WebRebel.connection;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.awt.Color;
 import java.net.InetSocketAddress;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
+@Data
 public class WebRebelConnection{
-	
-	private static Random random = new Random();
-	private UseragentParser parser;
+
+	private UseragentParser userAgentParser;
 	private InetSocketAddress ip;
 	private boolean codeEditingPermissable;
 	private Color codeColor;
 	
 	private Color uniqueColor;
-	
-	public WebRebelConnection(String userAgent, InetSocketAddress ip){
-		
-		parser = new UseragentParser(userAgent);
-		this.ip = ip;
-		
-		int r = random.nextInt(100);
-		int g = random.nextInt(100);
-		int b = random.nextInt(100);
-		
-		System.out.println(r + " " + g + " " + b);
-		
-		uniqueColor = new Color(r, g, b);
-		
-	}
-	
-	public Color getUniqueColor(){
-	
-		return uniqueColor;
-	
-	}
 
-	public UseragentParser getUserAgentParser(){
-	
-		return parser;
-	
-	}
-	
-	public InetSocketAddress getIp(){
-	
-		return ip;
-	
-	}
-	
-	public boolean isCodeEditingPermissable(){
-	
-		return codeEditingPermissable;
-	
-	}
-	
-	public Color getCodeColor(){
-	
-		return codeColor;
-	
-	}
-	
+	public WebRebelConnection(String userAgent, InetSocketAddress ip){
+
+	    userAgentParser = new UseragentParser(userAgent);
+	    this.ip = ip;
+	    codeEditingPermissable = true;
+
+	    Random random = ThreadLocalRandom.current();
+        codeColor = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+        uniqueColor = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+
+    }
+
 	@Override
 	public String toString(){
 		
-		return parser.getOperatingSystem().toString() + " " + parser.getBrowser().toString();
+		return userAgentParser.getOperatingSystem().toString() + " " + userAgentParser.getBrowser().toString();
 		
 	}
 	
