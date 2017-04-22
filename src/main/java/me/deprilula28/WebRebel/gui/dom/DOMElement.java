@@ -16,10 +16,10 @@ public class DOMElement{
 	private boolean hasChildren;
 	private boolean childrenKnown;
 	private List<DOMElement> children;
-	private List<String> path;
+	private String path;
 	private DefaultMutableTreeNode treeNode;
 
-	public DOMElement(DOMElementType typeEnum, String typeName, Map<String, String> attributes, boolean hasChildren, List<String> path, DefaultMutableTreeNode treeNode){
+	public DOMElement(DOMElementType typeEnum, String typeName, Map<String, String> attributes, boolean hasChildren, String path, DefaultMutableTreeNode treeNode){
 
 		this.typeEnum = typeEnum;
 		this.typeName = typeName;

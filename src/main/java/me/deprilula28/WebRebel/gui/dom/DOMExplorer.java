@@ -46,9 +46,7 @@ public class DOMExplorer{
 	private void exploreMain(){
 
 	    UUID uuid = UUID.randomUUID();
-	    Action action = new Action(ActionType.SERVER_DOM_REQUEST, uuid, JSON.json(
-            "expand", JSONArray.json("")
-        ));
+	    Action action = new Action(ActionType.SERVER_DOM_REQUEST, uuid, JSON.json());
 	    pendingRequests.put(uuid, null);
 	    socket.sendAction(action);
 
@@ -58,7 +56,7 @@ public class DOMExplorer{
 
 	    UUID uuid = UUID.randomUUID();
 	    Action action = new Action(ActionType.SERVER_DOM_REQUEST, uuid, JSON.json(
-            "expand", JSONArray.parse(element.getPath())
+            "expand", element.getPath()
         ));
 	    pendingRequests.put(uuid, element);
 	    socket.sendAction(action);
@@ -70,6 +68,7 @@ public class DOMExplorer{
 		if(!pendingRequests.containsKey(id)) throw new IOException("No DOM request found.");
 		
 		DOMElement expand = pendingRequests.get(id);
+        pendingRequests.remove(id);
 		
 		if(expand == null){
 			//Main Panel
@@ -80,7 +79,7 @@ public class DOMExplorer{
 			}
 		}else{
 			//Any other element
-			expand.setChildren(parseChildren(json, elementIDs.get(UUID.fromString(expand.getPath().get(expand.getPath().size() - 1))).getTreeNode()));
+			expand.setChildren(parseChildren(json, elementIDs.get(UUID.fromString(expand.getPath())).getTreeNode()));
 		}
 
 	}
@@ -95,7 +94,7 @@ public class DOMExplorer{
             DOMElementType elType = DOMElementType.find(type);
             Map<String, String> attributes = curj.getMapJSONObject("attributes", String.class);
             boolean hasChildren = curj.getBoolean("hasChildren");
-            List<String> paths = curj.getListJSONArray("path", String.class);
+            String paths = curj.getString("path");
             
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(type.toLowerCase());
             masterNode.add(newNode);
@@ -103,7 +102,7 @@ public class DOMExplorer{
             DOMElement element = new DOMElement(elType, type, attributes, hasChildren, paths, newNode);
             elements.add(element);
             elementNodes.put(newNode, element);
-            elementIDs.put(UUID.fromString(curj.getString("id")), element);
+            elementIDs.put(UUID.fromString(paths), element);
         }
 		
 		return elements;
