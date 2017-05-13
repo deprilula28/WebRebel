@@ -1,15 +1,39 @@
 package me.deprilula28.WebRebel;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.Map.Entry;
 
 public class Utils{
-	
-	public static String createIndentation(int amount){
+
+    public static final SimpleDateFormat FORMAT = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss");
+
+    public static String sinceString(long timestamp){
+
+        long timeDiff = System.currentTimeMillis() - timestamp;
+        long second = (timeDiff / 1000) % 60;
+        long minute = (timeDiff / (1000 * 60)) % 60;
+        long hour = (timeDiff / (1000 * 60 * 60)) % 24;
+        long day = (timeDiff / (1000 * 60 * 60 * 24)) % 30;
+        long month = (timeDiff / (1000 * 60 * 60 * 24 * 30));
+
+        if(month > 0) return month + " " + (month > 1 ? "months" : "month");
+        if(day > 0) return day + " " + (day > 1 ? "days" : "day");
+        if(hour > 0) return hour + " " + (hour > 1 ? "hours" : "hour");
+        if(minute > 0) return minute + " " + (minute > 1 ? "minutes" : "minute");
+        if(second > 0) return second + " " + (second > 1 ? "seconds" : "second");
+
+        return timeDiff + "ms";
+
+    }
+
+    public static String getTimestampString(long timestamp){
+
+        return FORMAT.format(timestamp);
+
+    }
+
+    public static String createIndentation(int amount){
 		
 		StringBuilder builder = new StringBuilder();
 		for(int i = 0; i < amount; i ++) builder.append(" ");
