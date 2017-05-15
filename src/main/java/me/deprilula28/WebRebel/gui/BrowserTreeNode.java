@@ -18,4 +18,11 @@ public class BrowserTreeNode extends DefaultMutableTreeNode{
 		
 	}
 
+	@Override
+	public String toString(){
+
+	    return browser.toString();
+
+    }
+
 }

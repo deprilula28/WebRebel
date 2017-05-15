@@ -1,5 +1,6 @@
 package me.deprilula28.WebRebel.socket;
 
+import static me.deprilula28.WebRebel.ColoredConsole.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -94,7 +95,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketClose(int code, String message){
 
 		executorService.shutdown();
-		System.out.println("(" + connection.toString() + ") Disconnected");
+		System.out.println(BLUE + "(" + connection.toString() + ")" + WHITE + " Disconnected" + RESET);
 		WebRebel.REBEL.getConnections().remove(this);
 		reloadTree();
 		connected = false;
@@ -106,7 +107,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void onWebSocketConnect(Session session){
 		
 		connection.getUserAgentParser().runParser();
-		System.out.println("(" + connection.toString() + ") Connected");
+		System.out.println(BLUE + "(" + connection.toString() + ")" + GREEN + " Connected" + RESET);
 		this.session = session;
 		remoteEndpoint = session.getRemote();
 		WebRebel.REBEL.getConnections().add(this);
@@ -156,7 +157,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				String errorTag = error.getString("error");
 				String errorMessage = error.getString("message");
 
-				System.err.println("(" + connection.toString() + ") WebRebel Error >> " + errorTag + ": " + errorMessage);
+				System.out.println(BLUE + "(" + connection.toString() + ")" + RED + " WebRebel Error >> " + errorTag + ": " + errorMessage + RESET);
 				break;
 			case CLIENT_REQUEST_CODE_EDIT_PERM:
 				if(connection.isCodeEditingPermissable()) throw new IOException("Already permissable!");
@@ -175,7 +176,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 				ConsoleLog logInstance = new ConsoleLog(LogType.valueOf(info.getString("type").toUpperCase()), info.getString("message"), stackTrace, System.currentTimeMillis());
 				logs.get(connection).add(logInstance);
 				WebRebel.REBEL.getFrame().getConsoleViewFrame().addMessage(connection, logInstance);
-				System.out.println("(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + logInstance.toString());
+				System.out.println(BLUE + "(" + connection.toString() + ") " + info.getString("type").toLowerCase() + " >> " + RESET + logInstance.toString() + RESET);
 				if(frame != null) frame.add(logInstance);
 				break;
 			case CLIENT_HANDSHAKE:
@@ -291,7 +292,7 @@ public class WebRebelSocket implements WebSocketListener, Runnable{
 	public void run(){
 		
 		if(lastPing > 0){
-			if(!pending) System.err.println("(" + connection.toString() + ") Connection pending...");
+			if(!pending) System.out.println(BLUE + "(" + connection.toString() + ") " + YELLOW + "Connection pending..." + RESET);
 			pending = true;
 		}else{
 			lastPing = System.currentTimeMillis();

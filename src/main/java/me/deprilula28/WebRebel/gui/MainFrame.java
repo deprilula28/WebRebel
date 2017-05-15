@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.UUID;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -34,14 +35,13 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
+import me.deprilula28.WebRebel.ActionType;
+import me.deprilula28.WebRebel.connection.*;
+import me.deprilula28.WebRebel.socket.WebRebelSocket;
 import org.json.JSON;
 
 import me.deprilula28.WebRebel.FolderCopyTask;
 import me.deprilula28.WebRebel.WebRebel;
-import me.deprilula28.WebRebel.connection.BrowserType;
-import me.deprilula28.WebRebel.connection.OperatingSystemType;
-import me.deprilula28.WebRebel.connection.UseragentParser;
-import me.deprilula28.WebRebel.connection.WebRebelConnection;
 import me.deprilula28.WebRebel.updateListener.FolderWatcher;
 
 public class MainFrame extends JFrame implements TreeCellRenderer{
@@ -331,6 +331,11 @@ public class MainFrame extends JFrame implements TreeCellRenderer{
 			consoleViewFrame.setVisible(!consoleViewFrame.isVisible());
 			consoleViewButton.setText(consoleViewFrame.isVisible() ? "Hide Console View" : "Open Console View");
 		});
+
+        refreshPageEverywhereButton.addActionListener((event) -> {
+            for(WebRebelSocket cur : WebRebel.REBEL.getConnections()) cur.sendAction(new Action(ActionType.SERVER_REQUEST_FULL_RELOAD,
+                    UUID.randomUUID(), new JSON()));
+        });
 		
 		setLocationRelativeTo(null);
 		
