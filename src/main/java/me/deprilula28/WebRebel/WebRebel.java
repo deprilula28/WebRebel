@@ -49,8 +49,8 @@ public class WebRebel{
                 BLUE + "-====-",
                 GREEN + "WebRebel v" + VERSION + " (from " + Utils.getTimestampString(BUILD_TIME * 1000) + ", " + Utils.sinceString(BUILD_TIME * 1000) + " ago)",
                 RED + "<> with <3 by deprilula28",
-                BLUE + "-====-" + RESET,
-                ""
+                BLUE + "-====-",
+                "" + RESET
         ).forEach(System.out::println);
 		
 		try{
