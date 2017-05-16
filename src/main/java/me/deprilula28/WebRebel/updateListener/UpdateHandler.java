@@ -1,5 +1,12 @@
 package me.deprilula28.WebRebel.updateListener;
 
+import me.deprilula28.WebRebel.ActionType;
+import me.deprilula28.WebRebel.WebRebel;
+import me.deprilula28.WebRebel.connection.Action;
+import me.deprilula28.WebRebel.socket.WebRebelSocket;
+import org.json.JSON;
+import org.json.JSONArray;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -7,13 +14,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-import org.json.JSON;
-import org.json.JSONArray;
-
-import me.deprilula28.WebRebel.ActionType;
-import me.deprilula28.WebRebel.WebRebel;
-import me.deprilula28.WebRebel.connection.Action;
-import me.deprilula28.WebRebel.socket.WebRebelSocket;
+import static me.deprilula28.WebRebel.ColoredConsole.BLUE;
+import static me.deprilula28.WebRebel.ColoredConsole.RESET;
 
 public class UpdateHandler{
 	
@@ -89,7 +91,7 @@ public class UpdateHandler{
 		for(WebRebelSocket cur : WebRebel.REBEL.getConnections()) cur.sendAction(action);
 		WebRebel.REBEL.getFrame().finishedTask();
 		
-		System.out.println("Streamed code changes successfully.");
+		System.out.println(BLUE + "Streamed code changes successfully." + RESET);
 		
 	}
 	

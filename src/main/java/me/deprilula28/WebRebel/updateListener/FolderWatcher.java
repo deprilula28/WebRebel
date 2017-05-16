@@ -25,6 +25,9 @@ import javax.swing.JOptionPane;
 
 import me.deprilula28.WebRebel.WebRebel;
 
+import static me.deprilula28.WebRebel.ColoredConsole.GREEN;
+import static me.deprilula28.WebRebel.ColoredConsole.RESET;
+
 public class FolderWatcher extends Thread{
 
     private Map<WatchKey, Path> keys;
@@ -76,7 +79,7 @@ public class FolderWatcher extends Thread{
 	@Override
 	public void run(){
 		
-		System.out.println("Started");
+		System.out.println(GREEN + "Started file watcher." + RESET);
 		
 		while(!stop){
 			try{
@@ -94,7 +97,6 @@ public class FolderWatcher extends Thread{
 						WatchEvent<Path> ev = (WatchEvent<Path>) cur;
 						Path relativePath = dir.resolve(ev.context());
 						String context = relativePath.toString().substring(folder.getAbsolutePath().length());
-						System.out.println(context);
 						
 						File backupFolderLocation = new File("folderBackup" + File.separatorChar + "path" + File.separatorChar + context);
 						File file = new File(folder.getAbsolutePath() + File.separatorChar + context);

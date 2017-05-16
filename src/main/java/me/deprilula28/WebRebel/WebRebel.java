@@ -1,12 +1,15 @@
 package me.deprilula28.WebRebel;
 
+import static me.deprilula28.WebRebel.ColoredConsole.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
@@ -41,13 +44,14 @@ public class WebRebel{
 	        e.printStackTrace();
         }
 
-        System.out.println("");
-        System.out.println("-====-");
-        System.out.println("WebRebel v" + VERSION + " (from " + Utils.getTimestampString(BUILD_TIME * 1000) + ", " +
-                Utils.sinceString(BUILD_TIME * 1000) + " ago)");
-		System.out.println("<> with <3 by deprilula28");
-		System.out.println("-====-");
-		System.out.println();
+        Stream.of(
+                "",
+                BLUE + "-====-",
+                GREEN + "WebRebel v" + VERSION + " (from " + Utils.getTimestampString(BUILD_TIME * 1000) + ", " + Utils.sinceString(BUILD_TIME * 1000) + " ago)",
+                RED + "<> with <3 by deprilula28",
+                BLUE + "-====-" + RESET,
+                ""
+        ).forEach(System.out::println);
 		
 		try{
 			Scanner scanner = new Scanner(new File("lib" + File.separatorChar + "save.json"));
@@ -123,7 +127,7 @@ public class WebRebel{
 			File target = new File(json.getString("originPath"));
 			
 			if(target.exists() && target.isDirectory()){
-				System.out.println("Folder exists!");
+				System.out.println(BLUE + "Folder exists!" + RESET);
 				frame.setFolder(target);
 				frame.setTask("Deleting temporary backup folder", true);
 				clear(new File("folderBackup" + File.separatorChar + "path"), false);
@@ -141,54 +145,47 @@ public class WebRebel{
 		
 		frame.setTask("Creating server", true);
 		
-		Thread thread = new Thread(){
-			
-			@Override
-			public void run(){
-				
-				try{
-					Server server = new Server(80);
-					
-					ServletContextHandler mainHandler = new ServletContextHandler(server, "/");
-					mainHandler.addServlet(LiveServlet.class, "/socket");
-					mainHandler.addServlet(FolderServlet.class, "/folder");
-					mainHandler.addServlet(MainPageServlet.class, "/");
-					
-					try{
-						frame.setTask("Initializing server", true);
-						server.start();
+		Thread thread = new Thread(() -> {
+            try{
+                Server server = new Server(80);
+
+                ServletContextHandler mainHandler = new ServletContextHandler(server, "/");
+                mainHandler.addServlet(LiveServlet.class, "/socket");
+                mainHandler.addServlet(FolderServlet.class, "/folder");
+                mainHandler.addServlet(MainPageServlet.class, "/");
+
+                try{
+                    frame.setTask("Initializing server", true);
+                    server.start();
+                }catch(Exception e){
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Fatal error occurred while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    System.exit(-1);
+                }
+
+                frame.setTask("Loading file listener", true);
+
+                if(frame.folder != null)
+                    try{
+                        frame.watcher = new FolderWatcher(frame.folder);
+                        frame.watcher.start();
                     }catch(Exception e){
-						e.printStackTrace();
-						JOptionPane.showMessageDialog(null, "Fatal error occurred while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
-								"Error", JOptionPane.ERROR_MESSAGE);
-						System.exit(-1);
-					}
-					
-					frame.setTask("Loading file listener", true);
+                        System.err.println("Failed to set file watcher");
+                        e.printStackTrace();
+                    }
 
-					if(frame.folder != null)
-						try{
-							frame.watcher = new FolderWatcher(frame.folder);
-							frame.watcher.start();
-						}catch(Exception e){
-							System.err.println("Failed to set file watcher");
-							e.printStackTrace();
-						}
+                frame.finishedTask();
+                System.out.println(GREEN + "Started server." + RESET);
+            }catch(Exception e){
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(-1);
+            }
 
-					frame.finishedTask();
-                    System.out.println("Finished!");
-				}catch(Exception e){
-					e.printStackTrace();
-					JOptionPane.showMessageDialog(null, "Fatal error occured while setting up Jetty:\n" + e.getClass().getName() + ": " + e.getMessage() + "\nPlease report this.",
-							"Error", JOptionPane.ERROR_MESSAGE);
-					System.exit(-1);
-				}
-				
-				frame.finishedTask();
-				
-			}
-			
-		};
+            frame.finishedTask();
+		});
 		
 		thread.setName("WebRebel");
 		thread.setDaemon(false);
